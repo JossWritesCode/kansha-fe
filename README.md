@@ -83,9 +83,9 @@ Kansha Rewards is an app that was designed to increase satisfaction and producti
 
 -    Allowed us to style according to our UX designer's specifications
 
-#### Front end deployed to `Netlify`
+#### Front end deployed to `Railway`
 
-#### [Back end](https://github.com/Lambda-School-Labs/kansha-be) built using:
+#### [Back end](../kansha-be) built using:
 
 #### _Node_
 
@@ -110,35 +110,46 @@ Kansha Rewards is an app that was designed to increase satisfaction and producti
 
 Authenticate and authorize apps and APIs with any identity provider running on any stack any device or cloud.  It is simple to integrate and allows users to just sign up with a Google account if they wish.
 
-## S3 Bucket
+## Image storage
 
-Amazon Simple Storage Service (Amazon S3) is an object storage service that offers industry-leading scalability, data availability, security, and performance. This means customers of all sizes and industries can use it to store and protect any amount of data for a range of use cases, such as websites, mobile applications, backup and restore, archive, enterprise applications, IoT devices, and big data analytics.
+Profile pictures are uploaded through the API to a private Railway Bucket (S3-compatible). Badge art and the default avatar are static files in `public/badges/` and `public/images/`. The current badges are placeholders, because the originals were lost with the old S3 bucket.
 
 
+
+# Running locally
+
+1. Use Node 22 (`nvm use` reads `.nvmrc`).
+2. `yarn install`
+3. `cp .env.example .env.local` and fill it in. You need an Auth0 SPA application and a running [API](../kansha-be).
+4. `yarn dev` starts the dev server on http://localhost:3000.
+
+## Scripts
+
+-   `yarn dev`: local development server
+-   `yarn build`: production build into `build/`
+-   `yarn start`: serves `build/` (used on Railway; handles client-side routes)
+-   `yarn test`: runs the Jest tests
 
 # Environment Variables
 
-In order for the app to function correctly, the user must set up their own environment variables. There should be a .env file containing the following:
+| Variable | Example |
+|---|---|
+| `REACT_APP_BASE_URL` | `https://<api>.up.railway.app` |
+| `REACT_APP_AUTH_DOMAIN` | `<tenant>.us.auth0.com` |
+| `REACT_APP_CLIENT_ID` | Auth0 application Client ID |
+| `REACT_APP_REDIRECT_URI_BASE` | this app's URL, e.g. `https://<frontend>.up.railway.app` |
 
-    *  REACT_APP_REDIRECT_URI_BASE = "http://localhost:3000"
-    *  REACT_APP_CLIENT_ID = "7zLELHA3Jyrt7O5M561HgBg3EjRsoT5K"
-    *  REACT_APP_BASE_URL = "https://kansha-staging.herokuapp.com"
-    *  REACT_APP_AUTH_DOMAIN = "kansha.auth0.com"
+Create React App bakes these in **at build time**. After changing one on Railway, redeploy.
+
+# Deploying to Railway
+
+Add a service from this repo. Railway's default builder runs `yarn build`, then `yarn start`, and needs no config file. Set the variables above, then generate a public domain under **Settings → Networking**.
+
+In Auth0, add the Railway URL (and `http://localhost:3000`) to **Allowed Callback URLs**, **Allowed Logout URLs** and **Allowed Web Origins**.
 
 # Testing
 
-We used Jest to build our testing for Kansha.
-
-# Installation Instructions
-
-1. Clone the repo to your drive
-2. cd into the kansha/kansha-fe/react-app
-3. type yarn to install the dependencies (if you use npm, it would be npm install)
-
-## Other Scripts
-
-    * yarn start - starts the local build of the app
-    * yarn test - runs the created tests on the build
+Tests use Jest, Enzyme and React Testing Library. `.env.test` provides dummy Auth0 values. Some legacy tests are out of date; CI runs them without blocking merges until they're fixed.
 
 # Contributing
 
