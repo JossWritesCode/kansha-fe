@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="200" height="200" role="img" aria-label="Team Leader badge">
+<circle cx="50" cy="50" r="48" fill="#0f0f33"/>
+<circle cx="50" cy="50" r="43" fill="none" stroke="#fff" stroke-opacity="0.35" stroke-width="2"/>
+<g transform="translate(0 -6)"><path d="M32 62 L36 38 L45 50 L50 34 L55 50 L64 38 L68 62 Z" fill="#fff"/></g>
+<text x="50" y="80" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="7.5" fill="#fff" letter-spacing="0.5">TEAM</text><text x="50" y="88.5" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="7.5" fill="#fff" letter-spacing="0.5">LEADER</text>
+</svg>
