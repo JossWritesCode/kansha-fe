@@ -2,6 +2,8 @@
 
 Kansha is a workplace recognition app. Employees send each other thank-you messages and badges, react and comment on them in a live feed, and see the badges they've earned on their profile.
 
+**Try it live:** https://kansha-fe-production.up.railway.app/
+
 This repo is the **frontend** (React, Redux, Sass). It needs the **[backend API](https://github.com/kansha-rewards/kansha-be)** running, and an Auth0 account for login.
 
 ## Run it locally
