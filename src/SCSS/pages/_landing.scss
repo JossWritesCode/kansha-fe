@@ -476,3 +476,40 @@
 	border-radius: 50%;
 	margin: 2rem;
 }
+
+// ---------- Login error banner ----------
+
+.login-error {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1.6rem;
+	padding: 1.2rem 1.6rem;
+	background-color: $color-primary-dark;
+	color: $color-white;
+	font-size: 1.6rem;
+
+	&__message {
+		margin: 0;
+	}
+
+	&__actions {
+		display: flex;
+		flex-shrink: 0;
+		gap: 0.8rem;
+	}
+
+	button {
+		padding: 0.6rem 1.2rem;
+		border: 1px solid rgba($color-white, 0.6);
+		border-radius: 0.6rem;
+		background: transparent;
+		color: inherit;
+		font-size: inherit;
+		cursor: pointer;
+
+		&:hover {
+			background-color: rgba($color-white, 0.15);
+		}
+	}
+}
