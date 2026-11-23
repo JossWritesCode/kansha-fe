@@ -1,230 +1,171 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { axiosWithAuth } from '../../utils/axiosWithAuth';
 import { finishLogin } from '../../store/actions/user-actions';
-import { useDispatch } from 'react-redux';
-// Component imports
-
+import { useEmployeeSearch } from '../../hooks/useEmployeeSearch';
 import OrganizationEmployeesTable from './OrganizationEmployeesTable';
 import OrganizationTeams from './OrganizationTeams';
 import CreateTeam from './CreateTeam';
 
+// Which table the page shows
+const EMPLOYEES = 'employees';
+const CREATE_TEAM = 'create';
+const TEAMS = 'teams';
+
+const byName = (a, b) => a.name.localeCompare(b.name);
+
 const OrganizationHome = () => {
-	const titleArr = ['Employees', 'Teams'];
-	// Button states
-	const [empButton, setEmpButton] = useState(true);
-	const [createTeamsBtn, setCreateTeamsBtn] = useState(false);
-	const [teamsBtn, setTeamsBtn] = useState(false);
-	// Query states
+	const [view, setView] = useState(EMPLOYEES);
 	const [filter, setFilter] = useState('');
-	const [limit, setLimit] = useState(20);
-	const [page, setPage] = useState(1);
-	// Counts
-	const [empCount, setEmpCount] = useState(0);
-	// employees state
-	const [title, setTitle] = useState(titleArr[0]);
-	const [employees, setEmployees] = useState([]);
-	const [teamMemberArray, setTeamMemberArray] = useState([]);
-	const [role, setRole] = useState('');
-	// Teams state
+	const { employees, setEmployees, count, hasMore, loadMore, isLoading } =
+		useEmployeeSearch(filter);
+
 	const [teams, setTeams] = useState([]);
+	const [teamMemberArray, setTeamMemberArray] = useState([]);
 	const [teamName, setTeamName] = useState('');
+	const [error, setError] = useState(null);
 
 	const history = useHistory();
-
-	let teamCount = teams.length;
-
 	const dispatch = useDispatch();
 
-	const handleSubmit = () => {
-		let newTeam = {
-			name: teamName,
-			newMembersArray: teamMemberArray,
-		};
-
-		axiosWithAuth()
-			.post('/teams', newTeam)
-			.then((res) => {
-				setTeamsBtn(true);
-				setCreateTeamsBtn(false);
-				history.push(`/teams/${res.data.id}`);
-
-				finishLogin(dispatch);
-				/* I added this "finishLogin(dispatch)" here because I needed the state to refresh before a user checks their profile.
-				However, it's hacky. I highly recommend updating the store instead so that other components will update without refresh */
-			})
-			.catch((error) => console.log(error.response));
-	};
-
-	// Grab Employees for a user's organization and set to state
 	useEffect(() => {
 		axiosWithAuth()
-			.get(
-				`/employees/organizations?search=${filter}&limit=${limit}&page=${page}`,
-			)
+			.get('/teams/')
+			.then((res) => setTeams([...res.data].sort(byName)))
+			.catch(() => setError("Couldn't load your teams."));
+	}, []);
+
+	const toggleTeamMember = (employee) =>
+		setTeamMemberArray((prev) =>
+			prev.some((tm) => tm.id === employee.id)
+				? prev.filter((tm) => tm.id !== employee.id)
+				: [
+						...prev,
+						{
+							...employee,
+							user_id: employee.id,
+							team_role: 'Member',
+						},
+					],
+		);
+
+	const canSave = teamName.trim() && teamMemberArray.length > 0;
+
+	const handleSubmit = () => {
+		if (!canSave) return;
+		setError(null);
+		axiosWithAuth()
+			.post('/teams', {
+				name: teamName.trim(),
+				newMembersArray: teamMemberArray,
+			})
 			.then((res) => {
-				setEmployees(res.data.employees);
-				setEmpCount(res.data.count);
-			});
-	}, [filter, limit, page]);
-
-	// Ordering employees array alphabetically
-	employees.sort((a, b) => a.first_name.localeCompare(b.first_name));
-
-	// Ordering teams in organization alphabetically
-	teams.sort((a, b) => a.name.localeCompare(b.name));
-
-	// Function to add a team member to array in create team component
-	const addTeamMember = (e, param) => {
-		e.preventDefault();
-		let checkbox = e.target.previousSibling;
-		if (!checkbox) {
-			checkbox = e.target;
-		}
-
-		const emp = employees.find((em) => em.id === param);
-		const alreadyAdded = teamMemberArray.find((tm) => tm.id === param);
-		if (alreadyAdded) {
-			setTeamMemberArray(teamMemberArray.filter((tm) => tm.id !== param));
-			checkbox.checked = false;
-		} else {
-			setTeamMemberArray([
-				...teamMemberArray,
-				{ ...emp, user_id: emp.id, team_role: 'member' },
-			]);
-			checkbox.checked = true;
-		}
+				// Reload the profile so the user's own team list is up to date
+				finishLogin(dispatch);
+				history.push(`/teams/${res.data.id}`);
+			})
+			.catch(() => setError("Couldn't create the team. Try again."));
 	};
 
-	const handleAddUserClick = () => {
-		history.push('/add-user');
-	};
-
-	// Dynamically rendering component based on which filter button is selected
-	let table;
-	if (empButton) {
-		table = (
-			<OrganizationEmployeesTable
-				empButton={empButton}
-				employees={employees}
-				setLimit={setLimit}
-				setPage={setPage}
-				limit={limit}
-				page={page}
-				setEmployees={setEmployees}
-				createTeamsBtn={createTeamsBtn}
-			/>
-		);
-	} else if (createTeamsBtn) {
-		table = (
-			<CreateTeam
-				setTeamMemberArray={setTeamMemberArray}
-				teamMemberArray={teamMemberArray}
-				employees={employees}
-				addTeamMember={addTeamMember}
-				teams={teams}
-				teamName={teamName}
-				setTeamName={setTeamName}
-				role={role}
-				setRole={setRole}
-			/>
-		);
-	} else if (teamsBtn) {
-		table = (
-			<OrganizationTeams
-				teams={teams}
-				setTeams={setTeams}
-				setCreateTeamsBtn={setCreateTeamsBtn}
-				setTitle={setTitle}
-				titleArr={titleArr}
-				setTeamsBtn={setTeamsBtn}
-			/>
-		);
-	}
-
-	let createButton;
-	if (createTeamsBtn) {
-		createButton = <button onClick={handleSubmit}>Save</button>;
-	} else if (!createTeamsBtn) {
-		createButton = (
-			<button
-				onClick={() => {
-					setCreateTeamsBtn(true);
-					setEmpButton(false);
-					setTitle(titleArr[0]);
-				}}>
-				Create a Team
-			</button>
-		);
-	}
+	const showEmployees = () => setView(EMPLOYEES);
+	const isTeams = view === TEAMS;
+	const hiddenInTeams = isTeams ? { visibility: 'hidden' } : undefined;
 
 	return (
 		<div className="teams-dashboard">
 			<div className="header">
 				<h1>Organization</h1>
-				<div className="add-team-container">{createButton}</div>
+				<div className="add-team-container">
+					{view === CREATE_TEAM ? (
+						<button onClick={handleSubmit} disabled={!canSave}>
+							Save
+						</button>
+					) : (
+						<button onClick={() => setView(CREATE_TEAM)}>
+							Create a Team
+						</button>
+					)}
+				</div>
 				<h2 className="members-number">
-					{title}{' '}
-					{empButton
-						? `(${empCount})`
-						: `(${teamCount})` && createTeamsBtn
-						? `(${empCount})`
-						: `(${teamCount})`}
+					{isTeams
+						? `Teams (${teams.length})`
+						: `Employees (${count})`}
 				</h2>
 			</div>
 			<div className="employee-filter-container">
 				<h3>Filter:</h3>
-				<button
-					onClick={() => {
-						setEmpButton(true);
-						setTitle(titleArr[0]);
-						setCreateTeamsBtn(false);
-						setTeamsBtn(false);
-					}}
-					className="btn-filter">
+				<button onClick={showEmployees} className="btn-filter">
 					Employees
 				</button>
-				<button
-					onClick={() => {
-						setEmpButton(false);
-						setCreateTeamsBtn(false);
-						setTeamsBtn(true);
-						setTitle(titleArr[1]);
-					}}
-					className="btn-filter">
+				<button onClick={() => setView(TEAMS)} className="btn-filter">
 					Teams
 				</button>
-				<button className="btn-filter" style={{ opacity: 0 }}>
+				{/* keeps the layout aligned */}
+				<button
+					className="btn-filter"
+					style={{ opacity: 0 }}
+					tabIndex={-1}
+					aria-hidden="true"
+				>
 					Hidden
 				</button>
 				<div className="employee-search-container">
 					<input
-						style={
-							teamsBtn
-								? { visibility: 'hidden' }
-								: { display: 'block' }
-						}
+						style={hiddenInTeams}
 						value={filter}
 						onChange={(event) => setFilter(event.target.value)}
 						type="text"
 						id="search"
 						name="search"
+						aria-label="Search employees"
 						placeholder="Search"
 					/>
 				</div>
 			</div>
 			<div className="select-add-members">
 				<h3
-					style={
-						teamsBtn
-							? { visibility: 'hidden' }
-							: { display: 'block' }
-					}
-					onClick={handleAddUserClick}>
+					style={hiddenInTeams}
+					onClick={() => history.push('/add-user')}
+				>
 					+ Add more members
 				</h3>
 			</div>
-			{table}
+			{error && <p role="alert">{error}</p>}
+
+			{view === EMPLOYEES && (
+				<OrganizationEmployeesTable
+					employees={employees}
+					setEmployees={setEmployees}
+				/>
+			)}
+			{view === CREATE_TEAM && (
+				<CreateTeam
+					employees={employees}
+					teamMemberArray={teamMemberArray}
+					setTeamMemberArray={setTeamMemberArray}
+					toggleTeamMember={toggleTeamMember}
+					teamName={teamName}
+					setTeamName={setTeamName}
+				/>
+			)}
+			{isTeams && (
+				<OrganizationTeams
+					teams={teams}
+					setTeams={setTeams}
+					onCreateTeam={() => setView(CREATE_TEAM)}
+				/>
+			)}
+			{!isTeams && hasMore && (
+				<button
+					type="button"
+					className="btn-filter"
+					onClick={loadMore}
+					disabled={isLoading}
+				>
+					Show more
+				</button>
+			)}
 		</div>
 	);
 };

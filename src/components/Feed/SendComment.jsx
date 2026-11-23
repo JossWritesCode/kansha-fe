@@ -2,49 +2,47 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addComment } from '../../store/actions/feed-actions';
 
-export const SendComments = ({
-	id,
-	scrollToBottom,
-	messageSent,
-	setMessageSent,
-}) => {
-	const [newComment, setNewComment] = useState('');
+const MAX_LENGTH = 140;
 
+export const SendComments = ({ id, onSent }) => {
+	const [newComment, setNewComment] = useState('');
+	const [isSending, setIsSending] = useState(false);
+	const [error, setError] = useState(null);
 	const dispatch = useDispatch();
 
-	const handleInput = event => {
-		setNewComment(event.target.value);
-	};
-
-	const handleSubmit = event => {
+	const handleSubmit = async (event) => {
 		event.preventDefault();
-		dispatch(addComment(id, newComment, sendSuccess));
-		setMessageSent(true);
-		//on handleSumbit, also setState to having sent message so to close the textarea
+		const message = newComment.trim();
+		if (!message) return;
+		setIsSending(true);
+		setError(null);
+		const ok = await dispatch(addComment(id, message));
+		setIsSending(false);
+		if (ok) {
+			setNewComment('');
+			if (onSent) onSent();
+		} else {
+			setError("Your comment couldn't be sent. Try again.");
+		}
 	};
 
-	const sendSuccess = () => {
-		setNewComment('');
-		scrollToBottom();
-	};
 	return (
-		<>
-			{!messageSent && (
-				<section className="rm-comment-box">
-					<textarea
-						//we want to be able to use the AddComment svg inside the placeholder
-						placeholder="Type message here"
-						value={newComment}
-						onChange={handleInput}
-						maxLength="140"
-					/>
-					<button
-						className="btn-onboarding-confirm"
-						onClick={handleSubmit}>
-						Send
-					</button>
-				</section>
-			)}
-		</>
+		<form className="rm-comment-box" onSubmit={handleSubmit}>
+			<textarea
+				aria-label="Comment"
+				placeholder="Type message here"
+				value={newComment}
+				onChange={(event) => setNewComment(event.target.value)}
+				maxLength={MAX_LENGTH}
+			/>
+			{error && <p role="alert">{error}</p>}
+			<button
+				type="submit"
+				className="btn-onboarding-confirm"
+				disabled={!newComment.trim() || isSending}
+			>
+				Send
+			</button>
+		</form>
 	);
 };

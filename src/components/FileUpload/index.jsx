@@ -1,35 +1,21 @@
 import React, { useState } from 'react';
 import ReactCrop from 'react-image-crop';
-import { useDispatch } from 'react-redux';
-import {
-	uploadPicture,
-	uploadBadContent,
-} from '../../store/actions/user-actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { uploadPicture } from '../../store/actions/user-actions';
 import 'react-image-crop/lib/ReactCrop.scss';
 
-const FileUpload = ({ close }) => {
-	const [src, setSrc] = useState({});
-	const [imageRef, setImageRef] = useState();
-	const [croppedImg, setCroppedImg] = useState();
-	const [file, setFile] = useState();
-	const [tool, setTool] = useState({
-		crop: {
-			unit: '%',
-			width: '60',
-			aspect: 1 / 1,
-		},
-	});
-	const dispatch = useDispatch();
+const MAX_SIZE = 500;
 
-	const getCroppedImg = (image, crop, fileName) => {
-		const canvas = document.createElement('canvas');
-		const scaleX = image.naturalWidth / image.width;
-		const scaleY = image.naturalHeight / image.height;
-		canvas.width = crop.width;
-		canvas.height = crop.height;
-		const ctx = canvas.getContext('2d');
-
-		ctx.drawImage(
+/* Draws the cropped part of `image` to a canvas and returns it as a JPEG blob */
+const cropToBlob = (image, crop) => {
+	const canvas = document.createElement('canvas');
+	const scaleX = image.naturalWidth / image.width;
+	const scaleY = image.naturalHeight / image.height;
+	canvas.width = crop.width;
+	canvas.height = crop.height;
+	canvas
+		.getContext('2d')
+		.drawImage(
 			image,
 			crop.x * scaleX,
 			crop.y * scaleY,
@@ -40,88 +26,80 @@ const FileUpload = ({ close }) => {
 			crop.width,
 			crop.height,
 		);
+	return new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg'));
+};
 
-		return new Promise(resolve => {
-			let reader = new FileReader();
-			canvas.toBlob(blob => {
-				if (!blob) {
-					return;
-				}
-				blob.name = fileName;
-				window.URL.revokeObjectURL(croppedImg);
-				let fileUrl = window.URL.createObjectURL(blob);
-				resolve(fileUrl);
-				reader.readAsDataURL(blob);
-				setFile(blob);
-			}, 'image/jpeg');
-		});
-	};
-
-	const makeClientCrop = async crop => {
-		if (imageRef && crop.width && crop.height) {
-			const croppedImageUrl = await getCroppedImg(
-				imageRef,
-				crop,
-				'newFile.jpg',
-			);
-			setCroppedImg(croppedImageUrl);
-		}
-	};
-
-	const onImageLoaded = image => {
-		setImageRef(image);
-		makeClientCrop(tool.crop);
-	};
-
-	const onSelectFile = e => {
-		if (e.target.files && e.target.files.length > 0) {
-			const reader = new FileReader();
-			reader.onload = event => {
-				const img = new Image();
-				img.src = event.target.result;
-				img.onload = () => {
-					const elem = document.createElement('canvas');
-					const maxSize = 500;
-					let { width, height } = img;
-					if (width > height && width > maxSize) {
-						height *= maxSize / width;
-						width = maxSize;
-					} else if (height > width && height > maxSize) {
-						width *= maxSize / height;
-						height = maxSize;
-					}
-					elem.width = width;
-					elem.height = height;
-					const ctx = elem.getContext('2d');
-					ctx.drawImage(img, 0, 0, width, height);
-					setSrc(elem.toDataURL());
-				};
+/* Reads an image file and scales it down so its longest side is MAX_SIZE */
+const readResized = (file) =>
+	new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onerror = reject;
+		reader.onload = (event) => {
+			const img = new Image();
+			img.onerror = reject;
+			img.onload = () => {
+				const scale = Math.min(
+					1,
+					MAX_SIZE / Math.max(img.width, img.height),
+				);
+				const canvas = document.createElement('canvas');
+				canvas.width = img.width * scale;
+				canvas.height = img.height * scale;
+				canvas
+					.getContext('2d')
+					.drawImage(img, 0, 0, canvas.width, canvas.height);
+				resolve(canvas.toDataURL());
 			};
-			reader.readAsDataURL(e.target.files[0]);
+			img.src = event.target.result;
+		};
+		reader.readAsDataURL(file);
+	});
+
+const FileUpload = ({ close }) => {
+	const [src, setSrc] = useState(null);
+	const [imageRef, setImageRef] = useState(null);
+	const [crop, setCrop] = useState({ unit: '%', width: 60, aspect: 1 });
+	const [blob, setBlob] = useState(null);
+	const [error, setError] = useState(null);
+	const isUploading = useSelector((state) => state.user.isUploading);
+	const dispatch = useDispatch();
+
+	const makeClientCrop = async (image, nextCrop) => {
+		if (image && nextCrop.width && nextCrop.height) {
+			setBlob(await cropToBlob(image, nextCrop));
 		}
 	};
 
-	const onCropComplete = crop => {
-		makeClientCrop(crop);
+	const onSelectFile = async (e) => {
+		const file = e.target.files && e.target.files[0];
+		if (!file) return;
+		if (!file.type.startsWith('image/')) {
+			setError('Please choose an image file.');
+			return;
+		}
+		setError(null);
+		setBlob(null);
+		try {
+			setSrc(await readResized(file));
+		} catch {
+			setError("Couldn't read that image. Try another file.");
+		}
 	};
 
-	const onCropChange = crop => {
-		setTool({ crop });
+	const onImageLoaded = (image) => {
+		setImageRef(image);
+		makeClientCrop(image, crop);
 	};
 
-	const imageTypes = types => {
-		return types.map(type => `image/${type}`);
-	};
-
-	const handleUpload = async e => {
-		const allowedImageTypes = imageTypes(['png', 'jpeg', 'gif']);
-		if (allowedImageTypes.includes(file.type)) {
-			const data = new FormData();
-			data.append('image', file);
-			await dispatch(uploadPicture(data));
-			close();
+	const handleUpload = async () => {
+		if (!blob) return;
+		const data = new FormData();
+		data.append('image', blob, 'profile.jpg');
+		const ok = await dispatch(uploadPicture(data));
+		if (ok) {
+			if (close) close(false);
 		} else {
-			dispatch(uploadBadContent(file.type, allowedImageTypes));
+			setError("Couldn't upload your picture. Try again.");
 		}
 	};
 
@@ -130,24 +108,27 @@ const FileUpload = ({ close }) => {
 			{src && (
 				<ReactCrop
 					src={src}
-					crop={tool.crop}
+					crop={crop}
 					circularCrop
 					onImageLoaded={onImageLoaded}
-					onComplete={onCropComplete}
-					onChange={onCropChange}
+					onComplete={(c) => makeClientCrop(imageRef, c)}
+					onChange={setCrop}
 				/>
 			)}
 			<input
 				type="file"
-				accept="image/*"
+				accept="image/png, image/jpeg, image/gif"
 				onChange={onSelectFile}
 				aria-label="upload photo"
 			/>
+			{error && <p role="alert">{error}</p>}
 			<button
 				type="button"
 				onClick={handleUpload}
-				className="btn-onboarding-confirm">
-				Upload
+				disabled={!blob || isUploading}
+				className="btn-onboarding-confirm"
+			>
+				{isUploading ? 'Uploading…' : 'Upload'}
 			</button>
 		</section>
 	);

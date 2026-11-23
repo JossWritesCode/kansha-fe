@@ -1,13 +1,10 @@
-const mockAxios = jest.genMockFromModule('axios');
+/*
+	Manual mock for axios. CRA resets mock implementations before every test
+	(`resetMocks: true`), so the default responses are set in setupTests.js.
+	`create` is a plain function so the reset can't break axiosWithAuth().
+*/
+const mockAxios = jest.createMockFromModule('axios');
 
-mockAxios.create = jest.fn(() => mockAxios);
-mockAxios.get = jest.fn(() => Promise.resolve({ data: {} }));
-mockAxios.all = jest.fn(array => Promise.all(array));
-mockAxios.spread = jest.fn(callback =>
-	jest.fn(arr => callback.apply(null, arr)),
-);
-mockAxios.delete = jest.fn(() => Promise.resolve({ data: {} }));
-mockAxios.post = jest.fn(() => Promise.resolve({ data: {} }));
-mockAxios.put = jest.fn(() => Promise.resolve({ data: {} }));
+mockAxios.create = () => mockAxios;
 
 export default mockAxios;

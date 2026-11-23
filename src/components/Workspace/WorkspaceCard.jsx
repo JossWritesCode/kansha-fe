@@ -2,29 +2,19 @@ import React, { useState } from 'react';
 import { ReactComponent as ProfileIcon } from '../../assets/profile.svg';
 import { ReactComponent as SendIcon } from '../../assets/send.svg';
 import { ReactComponent as TrashIcon } from '../../assets/Trashcan.svg';
-import { useHistory } from 'react-router-dom';
-
+import { useBadges } from '../../hooks/useBadges';
 import Modal from '../Modal';
 import RecogModal from '../RecogModal';
+import ProfileModal from '../FeedSideBar/ProfileModal';
 import ConfirmDelete from './ConfirmDelete';
 
 export default function WorkspaceCard({ profile, isAdmin, setTeam }) {
-	const history = useHistory();
-	const [modal, setModal] = useState(false);
+	const { badges } = useBadges();
+	const [recogModal, setRecogModal] = useState(false);
 	const [deleteModal, setDeleteModal] = useState(false);
+	const [profileModal, setProfileModal] = useState(false);
+	const name = `${profile.first_name} ${profile.last_name}`;
 
-	// const handleDelete = id => {
-	// 	// this will need to be turned into a confirmation modal, like the one on the figma.
-	// 	if (
-	// 		window.confirm('Are you sure you would like to delete this user?')
-	// 	) {
-	// 		axiosWithAuth()
-	// 			.delete(`/users/${id}`)
-	// 			.then(() => {
-	// 				props.setTeam(props.team.filter(user => !(user.id === id)));
-	// 			});
-	// 	}
-	// };
 	return (
 		<li className="workspace-card">
 			<section className="workspace-card-content">
@@ -32,13 +22,15 @@ export default function WorkspaceCard({ profile, isAdmin, setTeam }) {
 					<>
 						<button
 							className="trash"
-							onClick={() => setDeleteModal(!deleteModal)}>
+							aria-label={`Remove ${name}`}
+							onClick={() => setDeleteModal(true)}
+						>
 							<TrashIcon />
 						</button>
 						{deleteModal && (
 							<Modal close={setDeleteModal}>
 								<ConfirmDelete
-									name={`${profile.first_name} ${profile.last_name}`}
+									name={name}
 									id={profile.id}
 									setTeam={setTeam}
 								/>
@@ -47,27 +39,36 @@ export default function WorkspaceCard({ profile, isAdmin, setTeam }) {
 					</>
 				)}
 				<img alt="profile" src={profile.profile_picture} />
-				<h5>
-					{profile.first_name} {profile.last_name}
-				</h5>
+				<h5>{name}</h5>
 				<h6>{profile.job_title}</h6>
 				<h6>{profile.department}</h6>
 			</section>
 			<section className="workspace-card-icons">
 				<button
-					onClick={() => {
-						setModal(!modal);
-					}}>
+					aria-label={`Send ${name} a recognition`}
+					onClick={() => setRecogModal(true)}
+				>
 					<SendIcon />
 				</button>
-				<button onClick={() => history.push(`/profile/${profile.id}`)}>
+				<button
+					aria-label={`View ${name}'s profile`}
+					onClick={() => setProfileModal(true)}
+				>
 					<ProfileIcon />
 				</button>
 			</section>
-			{modal && (
-				<Modal close={setModal}>
+			{recogModal && (
+				<Modal close={setRecogModal}>
 					<RecogModal profile={profile} />
 				</Modal>
+			)}
+			{profileModal && (
+				<ProfileModal
+					close={() => setProfileModal(false)}
+					badges={badges}
+					profileId={profile.id}
+					inModal={false}
+				/>
 			)}
 		</li>
 	);

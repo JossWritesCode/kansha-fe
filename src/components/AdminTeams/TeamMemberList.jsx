@@ -1,118 +1,115 @@
 import React, { useState, useEffect } from 'react';
-import { axiosWithAuth } from '../../utils/axiosWithAuth';
-import { useLocation, useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useParams, useHistory } from 'react-router-dom';
 import Loader from 'react-loader-spinner';
-import Member from '../AdminTeams/Member';
+import { axiosWithAuth } from '../../utils/axiosWithAuth';
+import { useDebouncedValue } from '../../hooks/useDebouncedValue';
+import Member from './Member';
 
+const byFirstName = (a, b) => a.first_name.localeCompare(b.first_name);
+
+// The API pages team members (10 by default); this page has no paging
+const MEMBER_LIMIT = 100;
+
+/* The members of one team, at /teams/:id */
 function TeamMemberList() {
-	const [modal, setModal] = useState(false);
-	const [teamDetails, setTeamDetails] = useState();
-	const [filter, setFilter] = useState('');
-	const [loadingState, setLoadingState] = useState(true);
-	const [teamCount, setTeamCount] = useState([]);
-
-	let location = useLocation();
+	const { id } = useParams();
 	const history = useHistory();
-
-	const { profile } = useSelector(({ user }) => ({
-		...user,
-	}));
+	const [teamDetails, setTeamDetails] = useState(null);
+	const [teamCount, setTeamCount] = useState(0);
+	const [filter, setFilter] = useState('');
+	const [error, setError] = useState(false);
+	const search = useDebouncedValue(filter.trim());
 
 	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const { data } = await axiosWithAuth().get(
-					`${location.pathname}?search=${filter}`,
+		let cancelled = false;
+		const params = new URLSearchParams({ search, limit: MEMBER_LIMIT });
+		axiosWithAuth()
+			.get(`/teams/${id}?${params}`)
+			.then(({ data }) => {
+				if (cancelled) return;
+				// The API returns an empty body when no members match the search
+				setTeamDetails((prev) =>
+					data
+						? {
+								...data,
+								team_members: [
+									...(data.team_members || []),
+								].sort(byFirstName),
+							}
+						: { name: prev?.name || '', team_members: [] },
 				);
-
-				data.team_members.sort((a, b) =>
-					a.first_name.localeCompare(b.first_name),
-				);
-
-				setTeamDetails(data);
-				setLoadingState(false);
-			} catch (err) {
-				console.log(err);
-			}
+				setError(false);
+			})
+			.catch(() => {
+				if (!cancelled) setError(true);
+			});
+		return () => {
+			cancelled = true;
 		};
-		fetchData();
-	}, [location.pathname, filter]);
+	}, [id, search]);
 
 	useEffect(() => {
 		axiosWithAuth()
 			.get('/teams/')
-			.then((res) => {
-				setTeamCount(res.data);
-			});
+			.then((res) => setTeamCount(res.data.length))
+			.catch(() => {});
 	}, []);
 
-	// Getting total number of teams in an organization for header display
-	const teamLength = teamCount.length;
-
-	const handleBack = (e) => {
-		e.preventDefault();
-		history.push('/organization');
-	};
-
-	if (loadingState === true) {
-		return (
-			<Loader
-				type="Rings"
-				color="#c91757"
-				height={100}
-				width={100}
-				timeout={10000}
-			/>
-		);
-	} else {
+	if (error && !teamDetails) {
 		return (
 			<section className="teams-dashboard">
-				<div className="header">
-					<div className="teams-name-button">
-						<h1>{teamDetails.name}</h1>
-						<button
-							onClick={
-								handleBack
-							}>{`All Teams (${teamLength})`}</button>
-					</div>
-					<h2 className="members-number">{`Members (${teamDetails.team_members.length})`}</h2>
-				</div>
-				<div className="employee-filter-container">
-					<h3>Filter:</h3>
-					<button className="btn-filter">Members</button>
-					<div className="employee-search-container">
-						<input
-							value={filter}
-							onChange={(event) => setFilter(event.target.value)}
-							type="text"
-							id="search"
-							name="search"
-							placeholder="Search"
-						/>
-					</div>
-				</div>
-				<table className="team-member-table">
-					<tbody>
-						{teamDetails?.team_members?.map((member) => {
-							return (
-								<Member
-									key={member.id}
-									member={member}
-									modal={modal}
-									setModal={setModal}
-									profile={member}
-									myProfile={profile}
-									teamDetails={teamDetails}
-									setTeamDetails={setTeamDetails}
-								/>
-							);
-						})}
-					</tbody>
-				</table>
+				<p role="alert">This team couldn't be loaded.</p>
+				<button onClick={() => history.push('/organization')}>
+					Back to all teams
+				</button>
 			</section>
 		);
 	}
+
+	if (!teamDetails) {
+		return <Loader type="Rings" color="#c91757" height={100} width={100} />;
+	}
+
+	return (
+		<section className="teams-dashboard">
+			<div className="header">
+				<div className="teams-name-button">
+					<h1>{teamDetails.name}</h1>
+					<button
+						onClick={() => history.push('/organization')}
+					>{`All Teams (${teamCount})`}</button>
+				</div>
+				<h2 className="members-number">{`Members (${teamDetails.team_members.length})`}</h2>
+			</div>
+			<div className="employee-filter-container">
+				<h3>Filter:</h3>
+				<button className="btn-filter">Members</button>
+				<div className="employee-search-container">
+					<input
+						value={filter}
+						onChange={(event) => setFilter(event.target.value)}
+						type="text"
+						id="search"
+						name="search"
+						aria-label="Search team members"
+						placeholder="Search"
+					/>
+				</div>
+			</div>
+			<table className="team-member-table">
+				<tbody>
+					{teamDetails.team_members.map((member) => (
+						<Member
+							key={member.member_id || member.id}
+							member={member}
+							teamDetails={teamDetails}
+							setTeamDetails={setTeamDetails}
+						/>
+					))}
+				</tbody>
+			</table>
+		</section>
+	);
 }
 
 export default TeamMemberList;

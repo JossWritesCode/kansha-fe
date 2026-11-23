@@ -1,76 +1,30 @@
 import React from 'react';
-import { render, fireEvent, cleanup } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import S4UserUpload from '../../components/Onboarding/S4AUserUpload';
-import renderer from 'react-test-renderer';
-import { BrowserRouter } from 'react-router-dom';
+import { fireEvent } from '@testing-library/react';
+import S4AUserUpload from '../../components/Onboarding/S4AUserUpload';
 import { renderWithRouter } from '../utils';
 
-let S4Component = (
-	<BrowserRouter>
-		<S4UserUpload />
-	</BrowserRouter>
-);
-
-afterEach(cleanup);
-
-describe.skip('S4', () => {
-	//   it('matches snapshot', () => {
-	//   const tree = renderer.create(S4Component);
-	//   expect(tree.toJSON()).toMatchSnapshot();
-	// })
-
-	it('renders without crashing', () => {
-		render(S4Component);
+describe('S4A: add employees now?', () => {
+	it('asks whether to add employees now', () => {
+		const { getByText } = renderWithRouter(<S4AUserUpload />);
+		getByText(/Would you like to add employees now?/i);
 	});
 
-	it('should call props.onClick when clicked', () => {
-		const { getByText, history } = renderWithRouter(<S4UserUpload />);
-
-		const button = getByText(/Previous step/i);
-		// fireEvent.click(button);
-		expect(history.location.pathname).toBe('/');
-	});
-
-	it('should call the next button when clicked', () => {
-		const { getByText, history } = renderWithRouter(S4UserUpload);
-
-		const nextButton = getByText(/Next/i);
-		fireEvent.click(nextButton);
+	it('skips to the last step when the answer is no', () => {
+		const { getByLabelText, getByText, history } = renderWithRouter(
+			<S4AUserUpload />,
+		);
+		fireEvent.click(getByLabelText('No'));
+		fireEvent.click(getByText('Next'));
 		expect(history.location.pathname).toBe('/onboarding/step-6');
 	});
 
-	it('it displays add employees question', () => {
-		const { getByText, getAllByText } = render(S4Component);
-		getByText(/Would you like to add employees now?/i);
-		getByText(/yes/i);
-		getAllByText(/no/i);
-	});
-
-	it('renders without crashing', () => {
-		render(S4Component);
-	});
-
-	// it('should call props.onClick when clicked', () => {
-	// 	const { getByText, history } = renderWithRouter(<S4UserUpload />);
-
-	// 	const button = getByText(/Previous step/i);
-
-	// 	expect(history.location.pathname).toBe('/onboarding/step-2');
-	// });
-
-	it('should call the next button when clicked', () => {
-		const { getByText, history } = renderWithRouter(<S4UserUpload />);
-
-		const nextButton = getByText(/Next/i);
-		fireEvent.click(nextButton);
-		expect(history.location.pathname).toBe('/onboarding/step-6');
-	});
-
-	it('it displays add employees question', () => {
-		const { getByText, getAllByText } = render(S4Component);
-		getByText(/Would you like to add employees now?/i);
-		getByText(/yes/i);
-		getAllByText(/no/i);
+	it('goes to manual entry when chosen', () => {
+		const { getByLabelText, getByText, history } = renderWithRouter(
+			<S4AUserUpload />,
+		);
+		fireEvent.click(getByLabelText('Yes'));
+		fireEvent.click(getByLabelText(/Manually enter employees/));
+		fireEvent.click(getByText('Next'));
+		expect(history.location.pathname).toBe('/onboarding/step-4b');
 	});
 });

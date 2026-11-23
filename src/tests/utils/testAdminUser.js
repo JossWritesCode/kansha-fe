@@ -1,25 +1,28 @@
-import { createStore } from 'redux';
-import { userReducer } from '../../store/reducers/user-reducer';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import { reduxReducer } from '../../store';
 
-const testState = {
-	user: {
-		profile: {
-			first_name: 'Test',
-			last_name: 'User',
-			org_name: 'Org 1',
-			org_id: '1',
-			job_title: 'admin',
-			user_type: 'admin',
-			department: 'admin',
+/* A store with the given user profile logged in */
+export const makeTestStore = (profile = {}) =>
+	createStore(
+		reduxReducer,
+		{
+			user: {
+				...reduxReducer(undefined, { type: '@@INIT' }).user,
+				profile: {
+					id: 1,
+					first_name: 'Test',
+					last_name: 'User',
+					org_name: 'Org 1',
+					org_id: 1,
+					job_title: 'CEO',
+					user_type: 'standard',
+					department: '',
+					...profile,
+				},
+			},
 		},
-		isOnboarding: false,
-		isOnboardingLoading: false,
-		isLoggingIn: false,
-		isUploading: false,
-		isUpdating: false,
-		error: null,
-		authenticated: false,
-	},
-};
+		applyMiddleware(thunk),
+	);
 
-export const testAdminUser = createStore(userReducer, testState);
+export const testAdminUser = () => makeTestStore({ user_type: 'admin' });

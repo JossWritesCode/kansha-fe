@@ -1,31 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { axiosWithAuth } from '../../utils/axiosWithAuth';
 import DropDown from './DropDown.jsx';
 
-// post request to /users endpoint to create new user
-
+/* Creates the admin's account and organization (POST /users) */
 function S2CreateAccount({ user, setUser, handleUser }) {
 	const { register, errors, formState } = useForm({ mode: 'onChange' });
-	let history = useHistory();
+	const history = useHistory();
+	const [isSaving, setIsSaving] = useState(false);
+	const [error, setError] = useState(null);
 
 	function handleIndustry(value) {
 		setUser({ ...user, industry: value });
 	}
 
 	async function handleSubmit() {
+		setIsSaving(true);
+		setError(null);
 		try {
 			const res = await axiosWithAuth().post('/users', user);
-			setUser({
-				...user,
-				id: res.data[0],
-				org_id: res.org_id,
-				industry: res.selection,
-			});
+			setUser({ ...user, id: res.data[0] });
 			history.push('/onboarding/step-4');
-		} catch (error) {
-			console.log(error);
+		} catch {
+			setError("Couldn't create your account. Try again.");
+			setIsSaving(false);
 		}
 	}
 
@@ -42,7 +41,8 @@ function S2CreateAccount({ user, setUser, handleUser }) {
 						placeholder="First Name"
 						name="first_name"
 						defaultValue={user.first_name}
-						onChange={handleUser}></input>
+						onChange={handleUser}
+					></input>
 					{errors.first_name && 'First name is required'}
 					<input
 						className="formname"
@@ -50,7 +50,8 @@ function S2CreateAccount({ user, setUser, handleUser }) {
 						placeholder="Last Name"
 						name="last_name"
 						defaultValue={user.last_name}
-						onChange={handleUser}></input>
+						onChange={handleUser}
+					></input>
 					{errors.last_name && 'Last name is required'}
 				</div>
 
@@ -60,7 +61,8 @@ function S2CreateAccount({ user, setUser, handleUser }) {
 					placeholder="Job Title"
 					name="job_title"
 					defaultValue={user.job_title}
-					onChange={handleUser}></input>
+					onChange={handleUser}
+				></input>
 				{errors.job_title && 'Job Title is required'}
 
 				<h6>What's your organization name?</h6>
@@ -70,7 +72,8 @@ function S2CreateAccount({ user, setUser, handleUser }) {
 					ref={register({ required: true })}
 					name="org_name"
 					defaultValue={user.org_name}
-					onChange={handleUser}></input>
+					onChange={handleUser}
+				></input>
 				{errors.org_name && 'Organization name is required'}
 
 				<h6>How big is your organization?</h6>
@@ -81,7 +84,7 @@ function S2CreateAccount({ user, setUser, handleUser }) {
 							ref={register({ required: true })}
 							id="lessthan20"
 							name="company_size"
-							defaultValue="  less than 20"
+							defaultValue="less than 20"
 							onChange={handleUser}
 						/>
 					</div>
@@ -94,7 +97,7 @@ function S2CreateAccount({ user, setUser, handleUser }) {
 							ref={register({ required: true })}
 							id="21100"
 							name="company_size"
-							defaultValue="  21 to 100"
+							defaultValue="21 to 100"
 							onChange={handleUser}
 						/>
 						{errors.company_size && 'Company size is required'}
@@ -107,7 +110,7 @@ function S2CreateAccount({ user, setUser, handleUser }) {
 							ref={register({ required: true })}
 							id="over100"
 							name="company_size"
-							defaultValue="  over 100"
+							defaultValue="over 100"
 							onChange={handleUser}
 						/>
 						{errors.company_size && 'Company size is required'}
@@ -125,11 +128,12 @@ function S2CreateAccount({ user, setUser, handleUser }) {
 						onChange={handleUser}
 						classNombre="custom-select"
 						id="industry"
-						placeholder="e.g. Accounting">
+						placeholder="e.g. Accounting"
+					>
 						<option value="Accounting">Accounting</option>
 						<option value="Advertising/PR">Advertising/PR</option>
 						<option value="Aerospace">Aerospace</option>
-						<option value="Argiculture">Agriculture</option>
+						<option value="Agriculture">Agriculture</option>
 						<option value="Architecture">Architecture</option>
 						<option value="Airlines">Airlines</option>
 						<option value="Automotive">Automotive</option>
@@ -153,12 +157,12 @@ function S2CreateAccount({ user, setUser, handleUser }) {
 					{errors.industry && 'Industry is required'}
 				</div>
 			</form>
+			{error && <p role="alert">{error}</p>}
 			<button
-				disabled={
-					!formState.dirty || (formState.dirty && !formState.isValid)
-				}
+				disabled={!formState.dirty || !formState.isValid || isSaving}
 				type="submit"
-				onClick={handleSubmit}>
+				onClick={handleSubmit}
+			>
 				Next
 			</button>
 		</div>

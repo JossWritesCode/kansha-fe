@@ -1,32 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import SideBar from './SideBar';
 import Modal from './Modal';
 import HelpModal from './HelpModal/HelpModal';
 import FeedSideBar from './FeedSideBar';
 
+const WELCOME_TEXT =
+	'We are excited that you are adding Kansha to your employee recognition program! We’ve included some helpful tips to get you started but you can explore on your own. Once you’ve begun creating teams and budgets your dashboard will conveniently provide an overview for you upon logging in. If you need help later on, you can find common answers in the help menu!';
+
 const Dashboard = ({ children }) => {
-	const { profile } = useSelector(({ user }) => ({
-		...user,
-	}));
+	const firstName = useSelector((state) => state.user.profile.first_name);
 
 	const [helpModal, setHelpModal] = useState(false);
-	const [title, setTitle] = useState(`Welcome, ${profile.first_name}!`);
-	const [content, setContent] = useState(
-		'We are excited that you are adding Kansha to your employee recognition program! We’ve included some helpful tips to get you started but you can explore on your own. Once you’ve begun creating teams and budgets your dashboard will conveniently provide an overview for you upon logging in. If you need help later on, you can find common answers in the help menu!',
-	);
+	const [title, setTitle] = useState(`Welcome, ${firstName}!`);
+	const [content, setContent] = useState(WELCOME_TEXT);
 
-	let location = useLocation();
+	const location = useLocation();
+	const history = useHistory();
 
-	let history = useHistory();
-
+	// The sidebar's "Get help" link adds ?help to the URL
 	useEffect(() => {
-		if (location.search.match('help')) {
+		if (new URLSearchParams(location.search).has('help')) {
 			setHelpModal(true);
-			history.push(location.pathname);
+			history.replace(location.pathname);
 		}
 	}, [location, history]);
 

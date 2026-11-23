@@ -1,11 +1,7 @@
 import React from 'react';
-import '@testing-library/jest-dom';
-import { fireEvent, wait, cleanup } from '@testing-library/react';
-
+import { fireEvent, wait } from '@testing-library/react';
 import { renderWithRouterAndRedux } from './utils';
 import WorkspaceCard from '../components/Workspace/WorkspaceCard';
-
-afterEach(cleanup);
 
 const profile = {
 	id: 1,
@@ -15,33 +11,33 @@ const profile = {
 };
 
 describe('Workspace Card', () => {
-	it('should find an avatar in the workspace card', () => {
-		const { container } = renderWithRouterAndRedux(
-			<WorkspaceCard profile={profile} />,
+	it('shows the employee’s avatar', () => {
+		const { getByAltText } = renderWithRouterAndRedux(
+			<WorkspaceCard profile={profile} setTeam={() => {}} />,
 		);
-		const image = container.querySelector('img');
-
-		expect(image).toBeInTheDocument();
+		expect(getByAltText('profile')).toBeInTheDocument();
 	});
 
-	it('should open a modal when send button clicked', async () => {
-		const { container } = renderWithRouterAndRedux(
-			<WorkspaceCard profile={profile} />,
+	it('opens the recognition modal from the send button', async () => {
+		const { getByLabelText, findByLabelText } = renderWithRouterAndRedux(
+			<WorkspaceCard profile={profile} setTeam={() => {}} />,
 		);
-		const send = container.querySelector('button');
-		fireEvent.click(send);
-		await wait(() => {
-			const modal = container.querySelector('.modal');
-			expect(modal).toBeInTheDocument();
-		});
+		fireEvent.click(getByLabelText('Send Test User a recognition'));
+		expect(
+			await findByLabelText('Type your message here'),
+		).toBeInTheDocument();
 	});
 
-	it('should navigate to profile when profile button clicked', async () => {
-		const { container, history } = renderWithRouterAndRedux(
-			<WorkspaceCard profile={profile} />,
+	it('opens the profile modal from the profile button', async () => {
+		const { getByLabelText, container, history } = renderWithRouterAndRedux(
+			<WorkspaceCard profile={profile} setTeam={() => {}} />,
 		);
-		const [, profileBtn] = container.querySelectorAll('button');
-		fireEvent.click(profileBtn);
-		expect(history.location.pathname).toBe('/profile/1');
+		fireEvent.click(getByLabelText("View Test User's profile"));
+		await wait(() =>
+			expect(
+				container.querySelector('.profile-modal'),
+			).toBeInTheDocument(),
+		);
+		expect(history.location.pathname).toBe('/');
 	});
 });

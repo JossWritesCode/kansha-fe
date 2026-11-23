@@ -1,32 +1,28 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import OrganizationEmployeesTable from './OrganizationEmployeesTable';
-
 import { ReactComponent as RecognitionIcon } from '../../assets/TeamsIcons/recognition.svg';
 
+export const TEAM_ROLES = ['Member', 'Manager'];
+
+/* Pick employees and a name for a new team */
 const CreateTeam = ({
 	employees,
 	teamMemberArray,
 	setTeamMemberArray,
-	addTeamMember,
+	toggleTeamMember,
 	teamName,
 	setTeamName,
 }) => {
-	// Length of team to be added
-	const teamLength = teamMemberArray.length;
+	const selectedIds = useMemo(
+		() => new Set(teamMemberArray.map((tm) => tm.id)),
+		[teamMemberArray],
+	);
 
 	const handleRoleChange = (e, id) => {
 		const { value } = e.target;
-		setTeamMemberArray((prev) => {
-			return prev.map((tm) => {
-				if (tm.id === id) {
-					return {
-						...tm,
-						team_role: value,
-					};
-				}
-				return tm;
-			});
-		});
+		setTeamMemberArray((prev) =>
+			prev.map((tm) => (tm.id === id ? { ...tm, team_role: value } : tm)),
+		);
 	};
 
 	return (
@@ -34,9 +30,8 @@ const CreateTeam = ({
 			<div className="create-team-employees-list">
 				<OrganizationEmployeesTable
 					employees={employees}
-					teamMemberArray={teamMemberArray}
-					setTeamMemberArray={setTeamMemberArray}
-					addTeamMember={addTeamMember}
+					selectedIds={selectedIds}
+					onToggle={toggleTeamMember}
 				/>
 			</div>
 			<div className="create-team">
@@ -47,64 +42,62 @@ const CreateTeam = ({
 						type="text"
 						id="save-team"
 						name="name"
+						aria-label="Team Name"
 						placeholder="Team Name"
 					/>
-					<h2>{`Selected (${teamLength})`}</h2>
+					<h2>{`Selected (${teamMemberArray.length})`}</h2>
 				</div>
 				<div className="create-team-picked"></div>
 				<div className="added-team-list">
-					{teamMemberArray.map((team) => {
-						return (
-							<table key={team.id}>
-								<tbody>
-									<tr className="teams-employee-card">
-										<td className="teams-employee">
-											<a>
-												<div className="teams-employee-info">
-													<img
-														src={
-															team.profile_picture
-														}
-														alt="profile img"
-														className="teams-profile-picture"
-													/>
-													<h3>
-														{team.first_name}{' '}
-														{team.last_name}
-													</h3>
-												</div>
-											</a>
-										</td>
-										<td className="recognition-btn">
-											<RecognitionIcon
-												style={{
-													height: '20px',
-													width: '20px',
-												}}
+					{teamMemberArray.map((member) => (
+						<table key={member.id}>
+							<tbody>
+								<tr className="teams-employee-card">
+									<td className="teams-employee">
+										<div className="teams-employee-info">
+											<img
+												src={member.profile_picture}
+												alt=""
+												className="teams-profile-picture"
 											/>
-										</td>
-										<td className="teams-container">
-											<select
-												onChange={(e) =>
-													handleRoleChange(e, team.id)
-												}
-												value={team.team_role}>
-												<option value="Member">
-													Member
+											<h3>
+												{member.first_name}{' '}
+												{member.last_name}
+											</h3>
+										</div>
+									</td>
+									<td className="recognition-btn">
+										<RecognitionIcon
+											style={{
+												height: '20px',
+												width: '20px',
+											}}
+										/>
+									</td>
+									<td className="teams-container">
+										<select
+											aria-label={`${member.first_name}'s role`}
+											onChange={(e) =>
+												handleRoleChange(e, member.id)
+											}
+											value={member.team_role}
+										>
+											{TEAM_ROLES.map((role) => (
+												<option key={role} value={role}>
+													{role}
 												</option>
-												<option value="Manager">
-													Manager
-												</option>
-											</select>
-										</td>
-										<td className="teams-container">
-											<h3 className="teams">Teams (0)</h3>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						);
-					})}
+											))}
+										</select>
+									</td>
+									<td className="teams-container">
+										<h3 className="teams">{`Teams (${
+											member.team_count || 0
+										})`}</h3>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					))}
 				</div>
 			</div>
 		</div>

@@ -41,8 +41,13 @@
 		}
 	}
 
-	a {
+	a,
+	.nav-signout button {
 		color: $color-white;
+		background: none;
+		border: none;
+		font: inherit;
+		cursor: pointer;
 		display: flex;
 		align-items: center;
 		padding: 10px;

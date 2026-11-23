@@ -1,39 +1,31 @@
 import React from 'react';
-import '@testing-library/jest-dom';
 import { fireEvent } from '@testing-library/react';
 import SideBar from '../../components/SideBar';
 import { renderWithRouterAndRedux, testAdminUser } from '../utils';
 
 describe('SideBar', () => {
-	it('should render', () => {
-		const { container } = renderWithRouterAndRedux(<SideBar />);
-		expect(container).toBeInTheDocument();
-	});
-
 	it('should expand when hamburger clicked', () => {
 		const { container } = renderWithRouterAndRedux(<SideBar />);
 		const sidebar = container.querySelector('.side-nav');
-		const hamburger = container.querySelector('.hamburger');
-		expect(sidebar.classList.contains('is-open')).toBe(false);
-		fireEvent.click(hamburger);
-		expect(sidebar.classList.contains('is-open')).toBe(true);
+		expect(sidebar).not.toHaveClass('is-open');
+		fireEvent.click(container.querySelector('.hamburger'));
+		expect(sidebar).toHaveClass('is-open');
 	});
 
-	it('should go to workspace when first icon clicked', () => {
-		const { container, history } = renderWithRouterAndRedux(<SideBar />);
-		const link = container.querySelector('a');
-		expect(history.location.pathname).toBe('/');
-		fireEvent.click(link);
-		expect(history.location.pathname).toBe('/workspace');
+	it('should go to settings when the settings link is clicked', () => {
+		const { getByTitle, history } = renderWithRouterAndRedux(<SideBar />);
+		fireEvent.click(getByTitle('Settings'));
+		expect(history.location.pathname).toBe('/settings');
 	});
 
-	it('should go to the admin dashboard if logged in as admin', () => {
-		const { container, history } = renderWithRouterAndRedux(<SideBar />, {
-			store: testAdminUser,
+	it('should only show the Teams link to admins', () => {
+		const { queryByTitle } = renderWithRouterAndRedux(<SideBar />);
+		expect(queryByTitle('Teams')).toBeNull();
+
+		const admin = renderWithRouterAndRedux(<SideBar />, {
+			store: testAdminUser(),
 		});
-		const link = container.querySelector('a');
-		expect(history.location.pathname).toBe('/');
-		fireEvent.click(link);
-		expect(history.location.pathname).toBe('/dashboard');
+		fireEvent.click(admin.getByTitle('Teams'));
+		expect(admin.history.location.pathname).toBe('/organization');
 	});
 });

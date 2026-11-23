@@ -3,16 +3,14 @@ import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
-import { reduxReducer } from '../../store';
+import { makeTestStore } from './testAdminUser';
 
 export const renderWithRouterAndRedux = (
 	ui,
 	{
 		route = '/',
 		history = createMemoryHistory({ initialEntries: [route] }),
-		store = createStore(reduxReducer, applyMiddleware(thunk)),
+		store = makeTestStore(),
 	} = {},
 ) => {
 	const Wrapper = ({ children }) => (

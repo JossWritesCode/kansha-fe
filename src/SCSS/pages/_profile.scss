@@ -142,3 +142,14 @@
 	font-size: 3.4rem !important;
 	font-weight: normal;
 }
+
+.recognition-avatar {
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+
+	&:disabled {
+		cursor: default;
+	}
+}

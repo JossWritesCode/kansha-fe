@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 
-// // import S4BUserUpload from '../Onboarding/S4BUserUpload';
-// // import S4CUserUpload from '../Onboarding/S4CUserUpload';
-
 import { useHistory } from 'react-router-dom';
 
 function S4AUserUpload() {
@@ -11,24 +8,18 @@ function S4AUserUpload() {
 
 	let history = useHistory();
 
-	const handlePrevious = () => {
-		history.push('/onboarding/step-2');
-	};
-
-	const handleUploadNow = e => {
+	const handleUploadNow = (e) => {
 		setUploadNow(e.target.value);
 	};
 
-	const handleUploadMethod = e => {
+	const handleUploadMethod = (e) => {
 		setUploadMethod(e.target.value);
 	};
 
 	const handleClick = () => {
-		if (uploadNow === 'false') {
-			history.push('/onboarding/step-6');
-		} else if (uploadMethod === 'manual') {
+		if (uploadNow === 'true' && uploadMethod === 'manual') {
 			history.push('/onboarding/step-4b');
-		} else if (uploadMethod === 'bulk') {
+		} else if (uploadNow === 'true' && uploadMethod === 'bulk') {
 			history.push('/onboarding/step-4c');
 		} else {
 			history.push('/onboarding/step-6');
@@ -46,7 +37,7 @@ function S4AUserUpload() {
 							<input
 								type="radio"
 								id="yes"
-								name="drone"
+								name="upload-now"
 								value="true"
 								onChange={handleUploadNow}
 							/>
@@ -57,7 +48,7 @@ function S4AUserUpload() {
 							<input
 								type="radio"
 								id="no"
-								name="drone"
+								name="upload-now"
 								value="false"
 								onChange={handleUploadNow}
 							/>
@@ -72,7 +63,7 @@ function S4AUserUpload() {
 								<input
 									type="radio"
 									id="manual"
-									name="drone2"
+									name="upload-method"
 									value="manual"
 									onChange={handleUploadMethod}
 								/>
@@ -88,7 +79,7 @@ function S4AUserUpload() {
 								<input
 									type="radio"
 									id="bulk"
-									name="drone2"
+									name="upload-method"
 									value="bulk"
 									onChange={handleUploadMethod}
 								/>
@@ -106,15 +97,6 @@ function S4AUserUpload() {
 			</div>
 
 			<button onClick={handleClick}>Next</button>
-
-			<div className="step-p-container">
-				<span className="previousarrow">
-					<i className="fas fa-arrow-left" />
-					<div onClick={handlePrevious}>
-						<p> Previous step</p>
-					</div>
-				</span>
-			</div>
 		</>
 	);
 }
