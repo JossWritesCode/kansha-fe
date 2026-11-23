@@ -1,450 +1,434 @@
-.landing-page {
-	background-color: $color-white-dark;
-	min-height: 100%;
-	width: 100%;
-	overflow: hidden;
-	position: relative;
+// Landing page
+// Layout follows the redesign from kansha-rewards-fe: one centered content
+// column, sections that alternate white / soft-beach, and consistent type.
 
-	.didyouknow {
-		width: 95%;
-		max-width: 1440px;
-		margin: 0 auto;
-		display: flex;
-		position: relative;
-		height: 400px;
-
-		@media (min-width: 1490px) {
-			flex-direction: row-reverse;
-		}
-
-		@media (max-width: 1035px) {
-			flex-direction: column;
-			align-items: center;
-			height: auto;
-		}
-
-		> section {
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-
-			@media (max-width: 1035px) {
-				align-items: center;
-				text-align: center;
-			}
-			h2 {
-				font-size: 4.8rem;
-				font-weight: normal;
-				color: $color-black;
-				margin-bottom: 10px;
-			}
-			p {
-				width: 45%;
-				font-size: 2rem;
-				line-height: 3.4rem;
-				color: rgba(0, 13, 34, 0.7);
-				margin-bottom: 10px;
-
-				@media (max-width: 1035px) {
-					width: 70%;
-					margin: 30px 0;
-				}
-			}
-		}
-
-		> figure {
-			position: absolute;
-			background-image: url('../../assets/Macbook-Pro.svg');
-			background-size: cover;
-			right: -20vw;
-			top: 50%;
-			transform: translateY(-50%);
-			width: 800px;
-			height: 500px;
-
-			@media (min-width: 1490px) {
-				position: relative;
-				width: 2160px;
-				height: 560px;
-				left: 0;
-			}
-
-			@media (max-width: 1035px) {
-				position: relative;
-				transform: none;
-				top: 0;
-				left: 0;
-				margin-bottom: 50px;
-				width: 100%;
-				height: calc((95vw * 5) / 8);
-				background-size: contain;
-				background-repeat: no-repeat;
-			}
-
-			iframe {
-				position: absolute;
-				top: 31px;
-				left: 82px;
-				width: 660px;
-				height: 414px;
-
-				@media (min-width: 1490px) {
-					top: 34px;
-					left: 92px;
-					width: 740px;
-					height: 464px;
-				}
-
-				@media (max-width: 1035px) {
-					left: 10.1%;
-					top: 6.2%;
-					width: 80.7%;
-					height: 82.5%;
-				}
-			}
-		}
-	}
-}
-
-// Main Section
-.main-container-landing {
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-end;
-	margin: 7rem auto 0;
-	width: 95%;
-	max-width: 1440px;
-
-	@media (max-width: 900px) {
-		align-items: center;
-	}
-
-	@media (max-width: 610px) {
-		flex-direction: column;
-	}
-
-	> section {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		align-items: flex-start;
-		height: 100%;
-
-		@media (max-width: 610px) {
-			align-items: center;
-			text-align: center;
-		}
-
-		h2 {
-			font-weight: normal;
-			font-size: 4.9rem;
-			line-height: 7rem;
-			letter-spacing: -0.5px;
-			color: $color-black;
-
-			@media (max-width: 900px) {
-				font-size: 4rem;
-			}
-		}
-
-		h3 {
-			font-weight: 300;
-			font-size: 9rem;
-			line-height: 98%;
-			letter-spacing: -1.5px;
-			color: $color-primary-nav;
-
-			@media (max-width: 900px) {
-				font-size: 4rem;
-			}
-		}
-
-		p {
-			font-size: 1.8rem;
-			line-height: 2.8rem;
-			width: 75%;
-			letter-spacing: 0.5px;
-			color: $color-gray-light;
-			margin-top: 20px;
-		}
-
-		button {
-			background: $color-primary;
-			color: $color-white;
-			border-radius: 8px;
-			border: 0;
-			font-size: 2rem;
-			line-height: 2.4rem;
-			padding: 7px 40px;
-			margin-top: 20px;
-			cursor: pointer;
-		}
-	}
+.lp {
+	background-color: $color-white;
+	color: $color-black;
+	font-size: 1.6rem;
+	overflow-x: hidden;
 
 	img {
-		width: 40%;
-
-		@media (max-width: 900px) {
-			width: 30%;
-			height: 300px;
-			object-fit: cover;
-		}
-
-		@media (max-width: 610px) {
-			width: 80%;
-			margin: 30px 0 0;
-			flex-direction: column;
-		}
-	}
-}
-
-// list of features Section
-.list-of-features-container {
-	margin: 15rem auto 0;
-	width: 95%;
-	max-width: 1440px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-
-	h2 {
-		font-size: 5.7rem;
-		line-height: 7rem;
-		letter-spacing: -0.5px;
-		font-weight: normal;
-		text-align: center;
-
-		@media (max-width: 460px) {
-			font-size: 4rem;
-		}
-	}
-
-	> section {
-		display: flex;
-		justify-content: space-between;
-		flex-wrap: wrap;
-		margin: 50px 0 0;
-
-		> section {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			width: 30%;
-			height: 150px;
-			margin-bottom: 50px;
-
-			@media (max-width: 900px) {
-				width: 48%;
-			}
-
-			@media (max-width: 530px) {
-				width: 100%;
-			}
-
-			> img {
-				width: 40%;
-				margin: 0 10px;
-			}
-
-			> div {
-				margin-left: 20px;
-				h3 {
-					color: $color-primary-nav;
-					font-weight: 500;
-					font-size: 2.4rem;
-					line-height: 2.8rem;
-					letter-spacing: 0.15px;
-				}
-
-				p {
-					color: rgba(0, 13, 34, 0.7);
-					font-size: 1.6rem;
-					line-height: 1.9rem;
-					letter-spacing: 0.15px;
-					width: 90%;
-				}
-			}
-		}
-	}
-}
-
-// Why Kansha section
-
-.container-why-kansha {
-	width: 95%;
-	max-width: 1440px;
-	margin: 50px auto 100px;
-	height: 20%;
-	padding: 7% 0;
-
-	@media (max-width: 600px) {
-		text-align: center;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-	h2 {
-		font-size: 4.8rem;
-		font-weight: normal;
-		margin-bottom: 3%;
-	}
-
-	p {
-		font-size: 2.1rem;
-		color: $color-gray-light;
-		line-height: 144.9%;
-		width: 70%;
-		letter-spacing: 0.25px;
-
-		@media (max-width: 900px) {
-			width: 90%;
-		}
-	}
-}
-
-.container-results {
-	width: 95%;
-	max-width: 1440px;
-	margin: 0 auto;
-	display: flex;
-	flex-direction: column;
-	padding-top: 5rem;
-
-	@media (max-width: 500px) {
-		text-align: center;
-	}
-
-	h2 {
-		font-size: 4.8rem;
-		line-height: 5.8rem;
-		font-weight: normal;
-
-		span {
-			font-size: 6.4rem;
-			font-style: italic;
-			font-weight: semibold;
-			color: $color-primary;
-		}
-	}
-
-	h3 {
-		font-size: 3.4rem;
-		font-weight: normal;
-		line-height: 4.1rem;
-		color: rgba(0, 13, 34, 0.7);
-		padding-left: 1%;
+		display: block;
+		max-width: 100%;
 	}
 
 	ul {
-		display: flex;
-		justify-content: space-evenly;
-		margin-top: 5rem;
-		margin-bottom: 5rem;
+		list-style: none;
+	}
+}
 
-		@media (max-width: 500px) {
-			flex-direction: column;
-		}
+.lp-container {
+	@include lp-container;
+}
 
-		li {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			width: 25%;
-			align-content: center;
-			min-height: 430px;
+.lp-section {
+	padding-top: 6.4rem;
+	padding-bottom: 6.4rem;
 
-			@media (max-width: 500px) {
-				width: 100%;
-				margin-bottom: 20px;
-			}
+	@media (min-width: $bp-md) {
+		padding-top: 9.6rem;
+		padding-bottom: 9.6rem;
+	}
 
-			img {
-				width: 100%;
-			}
+	&--tinted {
+		background-color: $color-white-dark;
+	}
+}
 
-			p {
-				font-size: 2.2rem;
-				line-height: 144.1%;
-				letter-spacing: 0.18195px;
-				color: $color-primary-nav;
-				margin-top: 15px;
-			}
+// ---------- Shared type ----------
+
+.lp-heading {
+	font-size: 3.6rem;
+	font-weight: 400;
+	line-height: 1.2;
+	letter-spacing: -0.01em;
+	color: $color-black;
+
+	@media (min-width: $bp-md) {
+		font-size: 4.8rem;
+	}
+
+	&--xl {
+		@media (min-width: $bp-lg) {
+			font-size: 5.6rem;
 		}
 	}
 }
 
-// Enter Email Section
-.container-enter-email {
-	width: 80%;
-	margin: 75px auto;
-	max-width: 1440px;
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-	align-items: center;
-	padding: 30px;
-	border-radius: 8px;
-	// box-shadow: 2px 2px 2px rgba(15, 15, 51, 0.5),
-	// 	-2px -2px 2px rgba(15, 15, 51, 0.5);
-	background: $color-white-dark;
-	// @media (max-width: 750px) {
-	// 	box-shadow: none;
-	// 	background: $color-white-dark;
-	// }
+.lp-body {
+	margin-top: 1.6rem;
+	font-size: 1.8rem;
+	line-height: 1.6;
+	letter-spacing: 0.01em;
+	color: $color-gray-light;
 
-	label {
-		position: absolute;
-		left: -99999px;
-		height: 1px;
-		width: 1px;
-		overflow: hidden;
+	@media (min-width: $bp-md) {
+		font-size: 2rem;
+	}
+}
+
+// ---------- Buttons & links ----------
+
+.lp-cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 19.2rem;
+	min-height: 4.8rem;
+	padding: 1.2rem 3.2rem;
+	border: 0;
+	border-radius: 0.8rem;
+	background-color: $color-primary;
+	color: $color-white;
+	font-size: 1.8rem;
+	font-weight: 400;
+	letter-spacing: 0.04em;
+	cursor: pointer;
+	transition: background-color 200ms ease, box-shadow 200ms ease,
+		transform 200ms ease;
+
+	&:hover {
+		background-color: $color-primary-dark;
+		box-shadow: 0 4px 12px rgba($color-primary, 0.3);
 	}
 
-	input {
-		border: 0;
-		margin: 0;
-		border-radius: 0;
-		border-top-left-radius: 4px;
-		border-bottom-left-radius: 4px;
-		width: 80%;
-		height: 50px;
-		background: $color-white;
+	&:active {
+		transform: translateY(1px);
+	}
+
+	&:focus-visible {
+		outline: 3px solid rgba($color-primary, 0.4);
+		outline-offset: 3px;
+	}
+}
+
+.lp-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 1.6rem 2.8rem;
+	margin-top: 3.2rem;
+
+	@media (min-width: $bp-lg) {
+		justify-content: flex-start;
+	}
+}
+
+.lp-link {
+	font-size: 1.7rem;
+	color: $color-primary;
+	text-decoration: underline;
+	text-underline-offset: 0.4rem;
+
+	&:hover {
+		color: $color-primary-dark;
+	}
+
+	&:focus-visible {
+		outline: 2px solid currentColor;
+		outline-offset: 4px;
+		border-radius: 0.4rem;
+	}
+}
+
+// ---------- Hero ----------
+
+.lp-hero {
+	padding-top: 4.8rem;
+
+	@media (min-width: $bp-md) {
+		background-color: $color-white-dark;
+	}
+
+	&__inner {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 4rem;
+		text-align: center;
+
+		@media (min-width: $bp-md) {
+			flex-direction: row;
+			justify-content: space-between;
+			text-align: left;
+		}
+	}
+
+	&__text {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		max-width: 64rem;
+
+		@media (min-width: $bp-md) {
+			align-items: flex-start;
+			flex: 1 1 50%;
+		}
+	}
+
+	&__title {
+		display: flex;
+		flex-direction: column;
+		font-weight: 400;
+	}
+
+	&__lead {
+		font-size: 3.2rem;
+		line-height: 1.25;
+		letter-spacing: 0.01em;
 		color: $color-black;
 
-		&::placeholder {
-			color: rgba(0, 13, 34, 0.7);
-			letter-spacing: 0.25px;
-			font-size: 1.4rem;
-			line-height: 2rem;
+		@media (min-width: $bp-md) {
+			font-size: 3.6rem;
 		}
 
-		@media (max-width: 750px) {
-			display: none;
+		@media (min-width: $bp-lg) {
+			font-size: 5.2rem;
 		}
 	}
 
-	span {
-		border: 0;
-		border-radius: 4px;
-		background: $color-primary;
-		color: $color-white;
-		font-size: 2rem;
-		font-weight: 500;
-		line-height: 2.4rem;
-		letter-spacing: 0.15px;
-		height: 50px;
-		width: 15%;
+	&__accent {
+		margin-top: 0.4rem;
+		font-size: 5.6rem;
+		font-weight: 300;
+		line-height: 1;
+		letter-spacing: -0.02em;
+		color: $color-primary-nav;
+
+		@media (min-width: $bp-md) {
+			font-size: 7.2rem;
+		}
+
+		@media (min-width: $bp-lg) {
+			font-size: 9.6rem;
+		}
+	}
+
+	&__body {
+		margin: 2.4rem 0 3.6rem;
+		max-width: 48rem;
+		font-size: 1.8rem;
+		line-height: 1.6;
+		letter-spacing: 0.02em;
+		color: $color-gray-light;
+	}
+
+	&__image {
+		width: 100%;
+		max-width: 48rem;
+		aspect-ratio: 1 / 1;
+		object-fit: cover;
+		border-radius: 1.2rem;
+		box-shadow: 0 12px 32px rgba($color-primary-nav, 0.12);
+
+		@media (min-width: $bp-md) {
+			flex: 0 0 auto;
+			width: 44%;
+			max-width: 52rem;
+		}
+	}
+}
+
+// ---------- Why Kansha ----------
+
+.lp-why {
+	text-align: center;
+
+	@media (min-width: $bp-md) {
+		text-align: left;
+	}
+
+	&__body {
+		max-width: 72rem;
+		margin: 2.4rem auto 0;
+		font-size: 2.2rem;
+		line-height: 1.55;
+		letter-spacing: 0.01em;
+		color: $color-gray-light;
+
+		@media (min-width: $bp-md) {
+			margin-left: 0;
+			font-size: 2.8rem;
+		}
+	}
+}
+
+// ---------- Split text + image (Did you know) ----------
+
+.lp-split {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4.8rem;
+
+	@media (min-width: $bp-lg) {
+		flex-direction: row;
+		justify-content: space-between;
+		gap: 6.4rem;
+	}
+
+	&__text {
+		max-width: 52rem;
 		text-align: center;
-		cursor: pointer;
+
+		@media (min-width: $bp-lg) {
+			flex: 0 1 40%;
+			text-align: left;
+		}
+	}
+
+	&__image {
+		width: 100%;
+
+		@media (min-width: $bp-lg) {
+			flex: 0 1 56%;
+			min-width: 0;
+		}
+	}
+}
+
+.lp-stats__image {
+	border-radius: 1.2rem;
+	box-shadow: 0 16px 40px rgba($color-primary-nav, 0.14);
+}
+
+// ---------- Features grid ----------
+
+.lp-features {
+	&__grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 4rem;
+		margin-top: 4.8rem;
+
+		@media (min-width: $bp-md) {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 4.8rem 4rem;
+		}
+
+		@media (min-width: $bp-lg) {
+			grid-template-columns: repeat(3, 1fr);
+			margin-top: 6.4rem;
+		}
+	}
+}
+
+.lp-feature {
+	display: flex;
+	align-items: flex-start;
+	gap: 2rem;
+
+	&__icon {
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		flex-shrink: 0;
+		width: 6.4rem;
+		height: 6.4rem;
+		border-radius: 50%;
+		background-color: $color-primary;
+		color: $color-white;
 
-		@media (max-width: 1250px) {
-			width: 200px;
+		svg {
+			width: 3rem;
+			height: 3rem;
+			stroke-width: 1.5;
 		}
 	}
+
+	&__title {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		margin-top: 0.4rem;
+		font-size: 2rem;
+		font-weight: 700;
+		color: $color-black;
+	}
+
+	&__heart {
+		width: 1.8rem;
+		height: 1.8rem;
+		color: $color-primary;
+	}
+
+	&__body {
+		margin-top: 0.6rem;
+		font-size: 1.6rem;
+		line-height: 1.5;
+		color: $color-gray-light;
+	}
 }
+
+// ---------- Results ----------
+
+.lp-results {
+	text-align: center;
+
+	@media (min-width: $bp-md) {
+		text-align: left;
+	}
+
+	&__see {
+		font-style: italic;
+		font-weight: 700;
+		color: $color-primary;
+	}
+
+	&__sub {
+		margin-top: 1.2rem;
+		font-size: 2rem;
+		color: $color-gray-light;
+	}
+
+	&__grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 4.8rem;
+		margin-top: 4.8rem;
+
+		@media (min-width: $bp-md) {
+			grid-template-columns: repeat(3, 1fr);
+			gap: 3.2rem;
+		}
+	}
+
+	&__cta {
+		display: flex;
+		justify-content: center;
+		margin-top: 6.4rem;
+	}
+}
+
+.lp-result {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	@media (min-width: $bp-md) {
+		align-items: flex-start;
+	}
+
+	&__image {
+		width: 100%;
+		max-width: 36rem;
+		aspect-ratio: 1 / 1;
+		object-fit: cover;
+		border-radius: 1.2rem;
+	}
+
+	&__text {
+		max-width: 36rem;
+		margin-top: 2.4rem;
+		font-size: 1.8rem;
+		line-height: 1.5;
+		color: $color-black;
+	}
+}
+
+// ---------- About us ----------
 
 .about-us-container {
 	display: flex;
@@ -491,16 +475,4 @@
 	width: 30rem;
 	border-radius: 50%;
 	margin: 2rem;
-}
-
-.landing-logo-left {
-	position: absolute;
-	top: 1rem;
-	left: 1.5rem;
-}
-
-.nav-login-button {
-	position: absolute;
-	top: 0rem;
-	right: 4rem;
 }

@@ -1,25 +1,25 @@
 import React from 'react';
-import Main from './Main';
-import Footer from './Footer';
 import Header from './Header';
+import Main from './Main';
 import WhyKansha from './WhyKansha';
 import DidYouKnow from './DidYouKnow';
-import ResultsYouCanSee from './ResultsYouCanSee';
-import EnterEmail from './EnterEmail';
 import ListOfFeatures from './ListOfFeatures';
+import ResultsYouCanSee from './ResultsYouCanSee';
+import Footer from './Footer';
 
 const Landing = () => {
 	return (
-		<main className="landing-page">
+		<div className="lp">
 			<Header />
-			<Main />
-			<WhyKansha />
-			<DidYouKnow />
-			<ListOfFeatures />
-			<ResultsYouCanSee />
-			<EnterEmail />
+			<main>
+				<Main />
+				<WhyKansha />
+				<DidYouKnow />
+				<ListOfFeatures />
+				<ResultsYouCanSee />
+			</main>
 			<Footer />
-		</main>
+		</div>
 	);
 };
 

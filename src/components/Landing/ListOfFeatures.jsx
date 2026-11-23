@@ -1,82 +1,79 @@
 import React from 'react';
-import activityIcon from '../../assets/activity.svg';
-import adminIcon from '../../assets/admin.svg';
-import workspaceIcon from '../../assets/workspace.svg';
-import badgeIcon from '../../assets/badge.svg';
-import heartIcon from '../../assets/heart.svg';
-import rewardIcon from '../../assets/reward.svg';
+import {
+	FiGift,
+	FiUsers,
+	FiSettings,
+	FiAward,
+	FiHeart,
+	FiMessageCircle,
+} from 'react-icons/fi';
+import { FaHeart } from 'react-icons/fa';
 
-import Heart from '../../assets/heart.png';
+const features = [
+	{
+		Icon: FiGift,
+		title: 'Rewards',
+		description:
+			'Send your peers a gift card with a message to show recognition.',
+	},
+	{
+		Icon: FiAward,
+		title: 'Earn badges',
+		description:
+			'Earn and send badges to your peers that represent their hard work.',
+	},
+	{
+		Icon: FiUsers,
+		title: 'Workspace',
+		description:
+			'Connect people in the same workspace with public recognition.',
+	},
+	{
+		Icon: FiHeart,
+		title: (
+			<>
+				Leave a{' '}
+				<FaHeart className="lp-feature__heart" aria-label="heart" />
+			</>
+		),
+		description:
+			'React to posts with your favorite emoji to show your appreciation.',
+	},
+	{
+		Icon: FiSettings,
+		title: 'Admin access',
+		description:
+			'Only admin users have access to certain features to ensure moderation.',
+	},
+	{
+		Icon: FiMessageCircle,
+		title: 'Activity',
+		description:
+			'Keep track of your recognitions with our profile activities tracker.',
+	},
+];
 
 export default function ListOfFeatures() {
 	return (
-		<section className="list-of-features-container">
-			<h2>Recognize, motivate, and track accomplishments.</h2>
-			<section>
-				<section className="feature">
-					<img src={rewardIcon} alt="gift" />
-					<div>
-						<h3>Rewards</h3>
-						<p>
-							Send your peers a gift card with a message to show
-							recognition.
-						</p>
-					</div>
-				</section>
-				<section className="feature">
-					<img src={workspaceIcon} alt="peers icon" />
-					<div>
-						<h3>Workspace</h3>
-						<p>
-							Connecting people in the same workspace creating
-							public recognition.
-						</p>
-					</div>
-				</section>
-				<section className="feature">
-					<img src={adminIcon} alt="gear icon" />
-					<div>
-						<h3>Admin Access</h3>
-						<p>
-							Only admin users have access to certain features to
-							ensure moderation.
-						</p>
-					</div>
-				</section>
-
-				<section className="feature">
-					<img src={badgeIcon} alt="gear icon" />
-					<div>
-						<h3>Earn Badges</h3>
-						<p>
-							Earn and send badges to your peers that represent
-							their hard work.
-						</p>
-					</div>
-				</section>
-				<section className="feature">
-					<img src={heartIcon} alt="heart icon" />
-					<div>
-						<h3>
-							Leave a <img src={Heart} alt="heart icon" />
-						</h3>
-						<p>
-							React to posts with your favorite emoji to show your
-							appreciation.
-						</p>
-					</div>
-				</section>
-				<section className="feature">
-					<img src={activityIcon} alt="speech bubble icon" />
-					<div>
-						<h3>Activity</h3>
-						<p>
-							Keep track of your recognitions with our profile
-							activities tracker.
-						</p>
-					</div>
-				</section>
-			</section>
+		<section className="lp-section lp-features">
+			<div className="lp-container">
+				<h2 className="lp-heading lp-heading--xl">
+					Recognize, motivate, and track accomplishments.
+				</h2>
+				<ul className="lp-features__grid">
+					{features.map(({ Icon, title, description }, i) => (
+						<li className="lp-feature" key={i}>
+							<span className="lp-feature__icon" aria-hidden="true">
+								<Icon />
+							</span>
+							<div>
+								<h3 className="lp-feature__title">{title}</h3>
+								<p className="lp-feature__body">{description}</p>
+							</div>
+						</li>
+					))}
+				</ul>
+			</div>
 		</section>
 	);
 }

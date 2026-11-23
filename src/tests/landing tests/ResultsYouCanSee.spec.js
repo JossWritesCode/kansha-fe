@@ -13,9 +13,9 @@ describe('Results You Can See Title', () => {
 		expect(wrapper.exists());
 	});
 
-	it('renders Resulst You Can See as title', () => {
+	it('renders Results You Can See as title', () => {
 		const wrapper = shallow(<ResultsYouCanSee />);
 
-		expect(wrapper.find('h2').text()).toEqual('Results you can see');
+		expect(wrapper.find('h2').text()).toEqual('Results you can see.');
 	});
 });

@@ -1,36 +1,79 @@
-header {
+// Marketing header (landing, about us, onboarding)
+
+// The global `*` rule pins every element to $default-font-size. Inside the
+// marketing pages, let children inherit instead so sizes cascade predictably.
+// :where() keeps this at zero specificity so any class can override it.
+:where(.lp, .lp-header, .lp-footer) * {
+	font-size: inherit;
+}
+
+.lp-header {
 	width: 100%;
 	background-color: $color-primary-nav;
+	color: $color-white;
+	font-size: 1.8rem;
 
-	> div {
-		margin: 0 auto;
-		width: 95%;
-		max-width: 1440px;
+	&__inner {
+		@include lp-container;
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
-		height: 6rem;
+		justify-content: space-between;
+		min-height: 7.2rem;
+	}
 
-		section {
-			display: flex;
-			color: $color-white;
-			height: 100%;
-			align-items: center;
-			margin-left: -10px;
+	&__nav {
+		display: flex;
+		align-items: center;
+		gap: 2.8rem;
+	}
 
-			svg {
-				margin-top: 10px;
-			}
+	&__link {
+		@include lp-text-link;
+		font-weight: 400;
+	}
 
-			h1 {
-				font-family: Lato;
-				font-style: normal;
-				font-weight: normal;
-				font-size: 2.4rem;
-				font-weight: 400;
-				line-height: 0;
-				user-select: none;
-			}
+	&__login {
+		padding: 0.8rem 1.8rem;
+		border: 1px solid rgba($color-white, 0.5);
+		border-radius: 0.8rem;
+
+		&:hover,
+		&:focus-visible {
+			border-color: $color-white;
+			background-color: rgba($color-white, 0.08);
+			text-decoration: none;
 		}
+	}
+}
+
+// Logo + wordmark, shared by header and footer
+.lp-brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	color: $color-white;
+	border-radius: 0.4rem;
+
+	&__logo {
+		// nudge down to compensate for the drop shadow baked into the svg
+		margin-top: 0.6rem;
+		flex-shrink: 0;
+	}
+
+	&__name {
+		font-size: 2.6rem;
+		font-weight: 400;
+		letter-spacing: 0.02em;
+		user-select: none;
+	}
+
+	&:hover &__name {
+		text-decoration: underline;
+		text-underline-offset: 0.4rem;
+	}
+
+	&:focus-visible {
+		outline: 2px solid $color-white;
+		outline-offset: 4px;
 	}
 }

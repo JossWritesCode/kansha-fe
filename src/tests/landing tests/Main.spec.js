@@ -16,6 +16,8 @@ describe('Main Title', () => {
 	it('renders Workplace recognition. title', () => {
 		const wrapper = shallow(<Main />);
 
-		expect(wrapper.find('h2').text()).toEqual('Workplace recognition.');
+		expect(wrapper.find('h1').text()).toEqual(
+			'Workplace recognition.Redefined.',
+		);
 	});
 });
