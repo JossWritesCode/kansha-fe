@@ -1,6 +1,6 @@
 import React from 'react';
 import engagedTeam from '../../assets/landing/engaged-team-meeting.jpg';
-import teamHighFive from '../../assets/landing/team-high-five.jpg';
+import teamCelebrating from '../../assets/landing/hero.jpg';
 import workStation from '../../assets/landing/work-station.jpg';
 import CTAButton from './CTAButton';
 
@@ -11,8 +11,8 @@ const results = [
 		text: "Get employees in touch with your organization's values.",
 	},
 	{
-		src: teamHighFive,
-		alt: 'Four coworkers sharing a group high five',
+		src: teamCelebrating,
+		alt: 'Three coworkers jumping in celebration on a snowy path',
 		text: 'Reduce voluntary turnover.',
 	},
 	{

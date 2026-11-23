@@ -29,12 +29,12 @@ const Dashboard = ({ children }) => {
 	}, [location, history]);
 
 	return (
-		<>
+		<div className="app-canvas">
 			<SideBar />
 			<FeedSideBar />
 			{children}
 			{helpModal && (
-				<Modal close={setHelpModal}>
+				<Modal close={setHelpModal} className="modal--help">
 					<HelpModal
 						title={title}
 						content={content}
@@ -44,7 +44,7 @@ const Dashboard = ({ children }) => {
 					/>
 				</Modal>
 			)}
-		</>
+		</div>
 	);
 };
 

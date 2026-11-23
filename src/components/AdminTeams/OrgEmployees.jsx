@@ -101,20 +101,15 @@ const OrgEmployees = ({
 					<h3 className="teams">{`Teams (${employee.team_count || 0})`}</h3>
 				</td>
 				<td className="recognition-btn">
-					<RecognitionIcon
+					<button
+						type="button"
+						className="icon-btn icon-btn--recognize"
 						aria-label={`Recognize ${employee.first_name}`}
+						title={`Recognize ${employee.first_name}`}
 						onClick={() => setRecogModal(true)}
-						style={
-							selectable
-								? { display: 'block', cursor: 'pointer' }
-								: {
-										display: 'block',
-										width: '20px',
-										height: '20px',
-										cursor: 'pointer',
-									}
-						}
-					/>
+					>
+						<RecognitionIcon aria-hidden="true" focusable="false" />
+					</button>
 					{recogModal && (
 						<Modal close={setRecogModal}>
 							<RecogModal profile={employee} />
@@ -123,15 +118,15 @@ const OrgEmployees = ({
 				</td>
 				<td className="teams-employee-icons">
 					{deletable && (
-						<DeleteIcon
+						<button
+							type="button"
+							className="icon-btn icon-btn--delete"
 							aria-label={`Remove ${employee.first_name}`}
-							style={{
-								display: 'block',
-								marginRight: '20px',
-								cursor: 'pointer',
-							}}
+							title={`Remove ${employee.first_name}`}
 							onClick={() => setDeleteModal(true)}
-						/>
+						>
+							<DeleteIcon aria-hidden="true" focusable="false" />
+						</button>
 					)}
 				</td>
 			</tr>

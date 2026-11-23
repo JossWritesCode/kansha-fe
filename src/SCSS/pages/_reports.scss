@@ -1,95 +1,157 @@
+// Overview: Analytics and the leaderboard as two flat panels, stacked in the
+// same reading order on narrow screens.
+$bp-overview-columns: 1180px;
+
 .reports {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: $space-3;
 	width: 100%;
+
+	@media (min-width: $bp-overview-columns) {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		align-items: start;
+	}
+
+	.container-total-recog-graph,
+	.container-leaderboard {
+		@include panel;
+		min-width: 0;
+	}
+
+	.analytics-title {
+		@include app-section-title;
+		display: flex;
+		align-items: center;
+		min-height: 3.2rem;
+	}
+
+	// The leaderboard's period picker doubles as its section title
+	.container-time-dropdown {
+		display: flex;
+		align-items: center;
+		min-height: 3.2rem;
+
+		.custom-select.dashboard .select-selected {
+			height: 3.2rem;
+			margin-left: -0.8rem;
+			padding: 0 3.2rem 0 0.8rem;
+			border-color: transparent;
+			font-size: 2rem;
+			line-height: 2.6rem;
+			font-weight: 700;
+
+			&:after {
+				border-color: $ink;
+				border-width: 0 2px 2px 0;
+				width: 0.8rem;
+				height: 0.8rem;
+			}
+
+			&:hover {
+				border-color: $rule;
+			}
+		}
+
+		.custom-select.dashboard .select-items {
+			left: -0.8rem;
+			right: auto;
+		}
+	}
+}
+
+// Subsection headings share a row with their filter
+.container-total-recog-graph .title-container,
+.most-recog-container .most-recog-title-container {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: $space-2;
+	margin-top: $space-3;
+
+	h3 {
+		font-size: 1.6rem;
+		line-height: 2.4rem;
+		font-weight: 700;
+		color: $ink;
+	}
+}
+
+// A fine divider between the two halves of each panel
+.container-total-recog-graph .participation-container,
+.container-leaderboard .most-recog-container + .most-recog-container {
+	margin-top: $space-3;
+	padding-top: $space-3;
+	border-top: 1px solid $rule;
+}
+
+.container-leaderboard .most-recog-container + .most-recog-container {
+	.most-recog-title-container {
+		margin-top: 0;
+	}
+}
+
+// Recognitions over time
+.Chart {
+	position: relative;
+	width: 100%;
+	min-width: 0;
+	height: 22rem;
+	margin-top: $space-2;
+}
+
+// Participation rings, each with its number and label kept together
+.doughnut-charts {
 	display: flex;
 	flex-wrap: wrap;
-	justify-content: space-evenly;
-	margin-top: 1rem;
-	.container-total-recog-graph {
-		width: 45%;
+	justify-content: space-around;
+	gap: $space-3;
+	margin-top: $space-3;
+}
 
-		.analytics-title {
-			font-weight: 900;
+.doughnut-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 14rem;
+
+	@media (max-width: $bp-sm) {
+		width: 12rem;
+	}
+
+	h5 {
+		margin-top: 1.2rem;
+		font-size: 1.4rem;
+		line-height: 2rem;
+		font-weight: 400;
+		color: $ink;
+		text-align: center;
+	}
+}
+
+.doughnut {
+	position: relative;
+	width: 100%;
+
+	// "67% Participation": the number on the first line, the word beneath
+	.doughnut-text {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 9rem;
+		text-align: center;
+		font-size: 1.3rem;
+		line-height: 1.8rem;
+		font-weight: 400;
+		color: $ink-secondary;
+		pointer-events: none;
+
+		&::first-line {
 			font-size: 2.4rem;
-			height: 4.2rem;
-			width: 30rem;
-		}
-	}
-	.container-leaderboard {
-		width: 45%;
-		margin-left: 1%;
-	}
-	.container-time-dropdown {
-		// width: 45%;
-
-		.custom-select {
-			width: 21.4rem;
-			border: none;
-			margin: 0;
-			font-weight: 600;
-
-			.select-selected {
-				color: $color-black;
-				font-style: normal;
-				display: flex;
-				// align-items: center;
-				font-size: 2.2rem;
-				font-weight: 900;
-				padding: 0;
-				// margin-right: 100px;
-				height: 100%;
-				width: 100%;
-				position: relative;
-
-				&:after {
-					border: none;
-					content: '\2228';
-					color: $color-black;
-					font-size: 2rem;
-					font-weight: 100;
-					top: 0;
-					right: -5rem;
-					transition: 0.5s ease;
-					width: 50px;
-					height: fit-content;
-				}
-			}
-
-			.select-selected.select-arrow-active:after {
-				transform: rotateX(180deg);
-			}
-
-			.placeholder-div {
-				color: $color-black;
-				font-style: normal;
-				display: flex;
-				align-items: center;
-				font-size: 2.2rem;
-				font-weight: 900;
-				padding-top: 0;
-				height: 100%;
-				width: 100%;
-			}
-
-			.select-items {
-				width: 21.5rem;
-
-				> div {
-					padding: 5px;
-					height: 3rem;
-					font-size: 2rem;
-				}
-			}
-		}
-
-		.dropdown-time-div {
-			.dropdown-time {
-				background-color: #fff;
-				border: none;
-				font-weight: bold;
-				color: black;
-				font-size: 2.4rem;
-				width: 28rem;
-			}
+			line-height: 3rem;
+			font-weight: 700;
+			color: $ink;
 		}
 	}
 }

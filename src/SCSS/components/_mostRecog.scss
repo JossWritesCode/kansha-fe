@@ -1,172 +1,110 @@
+// Leaderboards: Most thanked / Most thankful
 .most-recog-container {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
 	width: 100%;
 
-	.recog-list-container {
-		overflow: auto;
-		height: 36rem;
-		width: 100%;
-	}
-
-	.most-recog-title-container {
-		width: 100%;
+	.limit-dropdown-container {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
-		margin: 2rem 0rem;
+		gap: 0.8rem;
 
-		h3 {
-			width: 20rem;
-			font-size: 2.4rem;
-		}
-		.custom-select {
-			width: 6rem;
-			border: none;
-			margin: 0;
-			padding-left: 5px;
-			font-weight: 300;
-
-			.select-selected {
-				padding: 0;
-				height: 100%;
-				display: flex;
-				align-items: center;
-
-				&:after {
-					border: none;
-					content: '\2228';
-					color: $color-black;
-					font-size: 1.5rem;
-					font-weight: 100;
-					top: 25%;
-					right: -10px;
-					transition: 0.5s ease;
-					width: 20px;
-					height: fit-content;
-				}
-			}
-
-			.select-selected.select-arrow-active:after {
-				transform: rotateX(180deg);
-			}
-
-			.placeholder-div {
-				color: $color-black;
-				font-style: normal;
-			}
-
-			.select-items {
-				width: 6rem;
-
-				> div {
-					padding: 5px;
-					height: 3rem;
-				}
-			}
-		}
-
-		.limit-dropdown-container {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			margin-left: 1rem;
-			label {
-				font-weight: 300;
-			}
-
-			.custom-select .dashboard {
-				width: 8rem;
-			}
-			select {
-				label {
-					font-size: 1.8rem;
-					font-weight: 300;
-				}
-				.dropdown-view {
-					background-color: #fff;
-					font-weight: 300;
-					border: none;
-					color: black;
-					width: 8rem;
-					font-size: 1.8rem;
-				}
-			}
+		label {
+			@include metadata;
 		}
 	}
-	li:nth-child(2n) {
-		background-color: #f9f9f9;
+
+	.recog-list-container {
+		list-style: none;
+		margin-top: 0.8rem;
 	}
+
 	.most-recog-individual {
-		width: 100%;
-		display: flex;
-		justify-content: flex-start;
-		padding: 0.8rem;
+		display: grid;
+		grid-template-columns: 3.6rem minmax(0, 1fr);
+		align-items: center;
+		gap: 1.2rem;
+		min-height: 5.6rem;
+		padding: 0.8rem 0;
+
+		& + .most-recog-individual {
+			border-top: 1px solid #efebe6;
+		}
+
 		.most-rec-profile-pic {
-			min-width: 50px;
-			height: 50px;
-			border-radius: 100%;
-		}
-
-		.most-rec-name-to-heart {
-			width: 100%;
-			display: flex;
-			justify-content: space-between;
-		}
-
-		.most-recog-name {
-			width: 10rem;
-			display: flex;
-			justify-content: flex-start;
-			align-items: center;
-			margin-left: 2rem;
-		}
-		.most-recog-progress {
-			width: 25rem;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-
-			progress {
-				border: 0;
-				border-radius: 5px;
-				width: 100px;
-				background: transparent;
-			}
-
-			progress::-webkit-progress-bar {
-				background-color: transparent;
-				border-radius: 2px;
-			}
-
-			progress::-webkit-progress-value {
-				background-color: $color-primary;
-				border-radius: 2px;
-				transition: all 0.3s ease;
-			}
-
-			progress::-moz-progress-bar {
-				background-color: $color-primary;
-				border-radius: 2px;
-				transition: all 0.3s ease;
-			}
-		}
-		.most-recog-heart {
-			display: flex;
-			align-items: center;
-			width: 5rem;
-			p {
-				margin-right: 0.3rem;
-			}
-			.heart-img {
-				width: 1.8rem;
-				height: 1.8rem;
-			}
+			width: 3.6rem;
+			height: 3.6rem;
+			border-radius: 50%;
+			object-fit: cover;
 		}
 	}
-}
 
-.reports .container-time-dropdown .custom-select .placeholder-div {
-	display: block !important;
+	.most-rec-name-to-heart {
+		display: grid;
+		grid-template-columns: minmax(0, 1.2fr) minmax(4rem, 1fr) 5.2rem;
+		align-items: center;
+		gap: $space-2;
+	}
+
+	.most-recog-name p {
+		overflow: hidden;
+		font-size: 1.5rem;
+		line-height: 2rem;
+		font-weight: 700;
+		color: $ink;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.most-recog-progress progress {
+		display: block;
+		width: 100%;
+		height: 0.6rem;
+		border: 0;
+		border-radius: 99px;
+		background-color: $rose-wash;
+		color: $raspberry;
+		appearance: none;
+		overflow: hidden;
+
+		&::-webkit-progress-bar {
+			background-color: $rose-wash;
+			border-radius: 99px;
+		}
+
+		&::-webkit-progress-value {
+			background-color: $raspberry;
+			border-radius: 99px;
+			transition: width 300ms ease;
+		}
+
+		&::-moz-progress-bar {
+			background-color: $raspberry;
+			border-radius: 99px;
+		}
+	}
+
+	.most-recog-heart {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 0.4rem;
+
+		p {
+			font-size: 1.4rem;
+			font-weight: 700;
+			color: $ink;
+			font-variant-numeric: tabular-nums;
+		}
+
+		.heart-img {
+			width: 1.4rem;
+			height: 1.4rem;
+		}
+	}
+
+	.leaderboard-empty {
+		padding: $space-2 0 0.8rem;
+		font-size: 1.4rem;
+		line-height: 2rem;
+		color: $ink-secondary;
+	}
 }

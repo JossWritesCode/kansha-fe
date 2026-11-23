@@ -1,120 +1,199 @@
-// layout of the profile and peer profile page
-.container-entire-profile {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-between;
-	align-items: flex-start;
-	background-color: $color-white;
-	color: $color-black;
-	padding: 2rem 0;
-	height: 100vh;
-	margin: 0 8rem;
+// Profile: the Members directory, then My badges and My activity as two
+// matching panels that grow with their content.
+$bp-profile-columns: 1100px;
 
-	@media (max-width: 720px) {
-		width: 75%;
+.container-entire-profile {
+	@include app-page;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	align-items: start;
+	gap: $space-3;
+
+	@media (min-width: $bp-profile-columns) {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 	}
 
-	.my-team-members {
-		width: 100%;
-		min-height: 30rem;
+	.my-team-members,
+	.profile-error {
+		grid-column: 1 / -1;
+	}
+
+	.profile-error {
+		color: $color-error;
+		font-size: 1.4rem;
+	}
+
+	// The directory component, without its page gutter
+	.my-team-members .teams-dashboard {
 		margin: 0;
-
-		.teams-dashboard {
-			margin: 0;
-		}
+		padding: 0;
 	}
 
-	.main-container-badges {
-		width: 45%;
-		height: 50%;
-		margin-left: 3rem;
-
-		@media (max-width: 720px) {
-			width: 100%;
-			margin-left: 0;
-		}
-
-		.badges-title-container {
-			display: flex;
-			color: $color-primary;
-
-			h1 {
-				font-size: 3.4rem;
-				margin-left: 2rem;
-				font-weight: normal;
-			}
-			h2 {
-				font-size: 2rem;
-				margin-left: 2rem;
-				padding: 0.8rem;
-				@include boxshadow();
-				border-radius: 229px;
-				width: 5rem;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			}
-		}
-
-		.profile-badges {
-			width: 100%;
-			ul {
-				display: flex;
-				width: 100%;
-				padding: 2rem 0;
-				flex-wrap: wrap;
-
-				height: 36rem;
-				overflow-y: scroll;
-			}
-		}
+	.teams-dashboard-title {
+		@include app-page-title;
+		margin-bottom: $space-3;
 	}
-}
 
-.container-entire-profile {
-	.activity-card {
-		width: 45%;
-		height: 60rem;
+	.members-panel .dropdown-time-div {
+		display: flex;
+	}
 
-		@media (max-width: 720px) {
-			width: 100%;
-		}
-	}
-	.title-activity-card {
-		font-weight: normal;
-		font-size: 3.4rem;
-		color: $color-primary;
-	}
-	#profile-activity-card {
+	// ---------- Panels ----------
+
+	.profile-panel {
+		@include panel;
 		display: flex;
 		flex-direction: column;
-		justify-content: flex-start;
+		min-width: 0;
+	}
+
+	.badges-title-container {
+		display: flex;
 		align-items: center;
-		height: 90%;
-		overflow-x: hidden;
-		overflow: auto;
-		margin-top: 2rem;
+		gap: 1.2rem;
+		min-height: 3.2rem;
 
-		.rec-info {
-			p {
-				color: $color-primary-nav;
-				font-size: 1.6rem;
+		h1 {
+			@include app-section-title;
+		}
 
-				.rec-info-name {
-					color: $color-primary !important;
-					font-size: 1.6rem !important;
+		// earned-badge count
+		h2 {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			min-width: 3.2rem;
+			height: 2.4rem;
+			padding: 0 0.8rem;
+			border-radius: 99px;
+			background-color: $rose-wash;
+			color: $raspberry-deep;
+			font-size: 1.3rem;
+			font-weight: 700;
+		}
+	}
+
+	.title-activity-card {
+		@include app-section-title;
+		display: flex;
+		align-items: center;
+		min-height: 3.2rem;
+	}
+
+	// Earned badges keep their full color and size. Undo the profile
+	// dialog's fixed-height list so the panel grows with what's earned.
+	.profile-badges {
+		width: 100%;
+	}
+
+	.profile-badges ul {
+		height: auto;
+		overflow: visible;
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(11.2rem, 1fr));
+		gap: $space-2;
+		padding-top: $space-2;
+		list-style: none;
+
+		.badge-profile {
+			display: block;
+			width: 100%;
+			max-width: 14rem;
+			height: auto;
+			margin: 0 auto;
+		}
+	}
+
+	// ---------- Empty states: small art, message right beneath ----------
+
+	.profile-empty {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1.2rem;
+		padding: $space-3 0 $space-2;
+		text-align: center;
+
+		p {
+			font-size: 1.4rem;
+			line-height: 2rem;
+			color: $ink-secondary;
+		}
+	}
+
+	.profile-empty__badge {
+		width: 7.2rem;
+		height: 7.2rem;
+		filter: grayscale(1);
+		opacity: 0.35;
+	}
+
+	.profile-empty__activity {
+		width: auto;
+		height: 6.4rem;
+		max-width: 100%;
+	}
+
+	// ---------- Activity ----------
+
+	#profile-activity-card {
+		margin-top: 0.8rem;
+
+		.profile-activity {
+			width: 100%;
+		}
+
+		.container-card-and-buttons {
+			background-color: transparent;
+			padding: 0.4rem 0;
+
+			& + .container-card-and-buttons {
+				border-top: 1px solid #efebe6;
+			}
+
+			// phones: reactions drop under the message instead of overflowing
+			@media (max-width: $bp-sm) {
+				.container-recognition-card {
+					flex-wrap: wrap;
+					min-width: 0;
+				}
+
+				.activity-section {
+					flex: 1 1 0;
+					min-width: 0;
+				}
+
+				.recognition-message {
+					width: auto;
+					flex: 1 1 auto;
+				}
+
+				.activity-badge {
+					margin-left: 0.8rem;
+				}
+
+				.rm-buttons {
+					flex: 0 0 100%;
+					width: 100%;
+					justify-content: flex-start;
+					gap: 0.8rem;
+					margin: 0.4rem 0 0.4rem;
+					padding-left: 4.5rem;
 				}
 			}
 		}
-	}
-}
 
-#root
-	.container-entire-profile
-	.activity-card
-	#profile-activity-card
-	.profile-activity {
-	width: 100%;
+		.rec-info p {
+			color: $ink-secondary;
+			font-size: 1.4rem;
+
+			.rec-info-name {
+				color: $ink;
+				font-size: 1.4rem;
+				font-weight: 700;
+			}
+		}
+	}
 }
 
 .profile-main {
@@ -137,16 +216,11 @@
 	}
 }
 
-.teams-dashboard-title {
-	color: $color-primary-nav;
-	font-size: 3.4rem !important;
-	font-weight: normal;
-}
-
 .recognition-avatar {
 	background: none;
 	border: none;
 	padding: 0;
+	border-radius: 50%;
 	cursor: pointer;
 
 	&:disabled {

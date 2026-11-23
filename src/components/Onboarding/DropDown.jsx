@@ -62,9 +62,30 @@ const DropDown = ({
 		};
 	}, []);
 
+	// Keyboard: Enter/Space opens the menu and picks an option
+	const isActivation = e => e.key === 'Enter' || e.key === ' ';
+
+	const selectKeyDown = e => {
+		if (!isActivation(e)) return;
+		e.preventDefault();
+		selectClick(e);
+	};
+
+	const optionKeyDown = e => {
+		if (!isActivation(e)) return;
+		e.preventDefault();
+		optionClick(e);
+		fakeSelect.current.focus();
+	};
+
 	const optionDivs = Children.map(children, option => {
 		return (
-			<div onClick={optionClick} data-value={option.props.value}>
+			<div
+				role="option"
+				tabIndex={0}
+				onClick={optionClick}
+				onKeyDown={optionKeyDown}
+				data-value={option.props.value}>
 				{option.props.children}
 			</div>
 		);
@@ -77,10 +98,17 @@ const DropDown = ({
 				id={id}
 				className="select-selected"
 				ref={fakeSelect}
-				onClick={selectClick}>
+				role="button"
+				tabIndex={0}
+				aria-haspopup="listbox"
+				onClick={selectClick}
+				onKeyDown={selectKeyDown}>
 				{current}
 			</div>
-			<div className="select-items select-hide" ref={fakeOptions}>
+			<div
+				className="select-items select-hide"
+				ref={fakeOptions}
+				role="listbox">
 				{optionDivs}
 			</div>
 		</div>

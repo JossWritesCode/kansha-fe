@@ -5,7 +5,11 @@ import { Link } from 'react-router-dom';
 const HelpModal = ({ title, content, setTitle, setContent, setHelpModal }) => {
 	return (
 		<div className="help-modal-container">
-			<HelpModalMenu setTitle={setTitle} setContent={setContent} />
+			<HelpModalMenu
+				title={title}
+				setTitle={setTitle}
+				setContent={setContent}
+			/>
 			<div className="help-modal-content">
 				<Link
 					className="modal-dash-link"

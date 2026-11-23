@@ -37,11 +37,24 @@ function FeedSideBar() {
 	}, [dispatch]);
 
 	return (
-		<aside className={`feed-bar${open ? ' is-rec-open' : ''}`}>
+		<aside
+			className={`feed-bar${open ? ' is-rec-open' : ''}`}
+			aria-label="Feed">
+			{/* The whole header toggles the rail; the tab's clicks bubble here */}
 			<div className="feed-headers" onClick={() => setOpen(!open)}>
-				<h2 className={open ? 'is-arrow-open' : 'is-arrow-closed'}>
-					Feed
-				</h2>
+				{/* One edge tab: the chevron points the way the rail moves */}
+				<button
+					type="button"
+					className="feed-tab"
+					aria-expanded={open}>
+					<span
+						className={`feed-tab__chevron ${
+							open ? 'is-arrow-open' : 'is-arrow-closed'
+						}`}
+						aria-hidden="true"
+					/>
+					<span className="feed-tab__label">Feed</span>
+				</button>
 				<h3 className={open ? 'recently-thanked-title' : 'hidden'}>
 					Recent Thanks
 				</h3>

@@ -1,61 +1,88 @@
 .feed-bar {
-	background-color: $color-white;
+	background-color: $surface;
 	width: 55px;
 	height: 100vh;
+	top: 0;
 	right: 0px;
 	position: fixed;
 	display: flex;
-	border-left: 2px solid lightgray;
+	border-left: 1px solid $rule;
 	flex-direction: column;
-	transition: width 500ms ease;
-	z-index: 5;
+	transition: width 400ms ease;
+	z-index: 15;
 
-	@media (max-width: 720px) {
+	@media (max-width: $bp-feed) {
 		display: none;
 	}
 
 	.feed-headers {
 		display: flex;
-		margin-top: 3rem;
-		margin-bottom: 3rem;
-		margin-left: 1rem;
-		justify-content: space-between;
+		align-items: center;
+		gap: $space-2;
+		margin: $space-2 0;
 		position: relative;
 		user-select: none;
-
-		&:hover {
-			cursor: pointer;
-		}
-
-		h2 {
-			margin-left: 5px;
-		}
-
-		.is-arrow-open:before {
-			position: absolute;
-			content: '';
-			top: 50%;
-			transform: translateY(-50%);
-			left: -6px;
-			width: 0;
-			height: 0;
-			border: 5px solid transparent;
-			border-color: transparent transparent transparent $color-secondary;
-		}
-		.is-arrow-closed:before {
-			position: absolute;
-			content: '';
-			top: 50%;
-			transform: translateY(-50%);
-			left: -6px;
-			width: 0;
-			height: 0;
-			border: 5px solid transparent;
-			border-color: transparent $color-secondary transparent transparent;
-		}
+		cursor: pointer;
 
 		.recently-thanked-title {
 			min-width: 150px;
+			font-size: 1.6rem;
+			line-height: 2.4rem;
+			font-weight: 700;
+			color: $ink;
+		}
+	}
+
+	// Label and chevron as one tab on the rail's edge
+	.feed-tab {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		flex-shrink: 0;
+		width: 5.4rem;
+		height: 4rem;
+		margin-left: -1px;
+		padding: 0 0.8rem 0 0.9rem;
+		border: 1px solid $rule;
+		border-left: 2px solid $raspberry;
+		border-radius: 0 $radius-control $radius-control 0;
+		background-color: $paper;
+		color: $ink;
+		font-size: 1.3rem;
+		line-height: 1.8rem;
+		font-weight: 700;
+		cursor: pointer;
+		transition: background-color 150ms ease;
+
+		&:hover {
+			background-color: $rose-wash;
+		}
+
+		&:focus-visible {
+			@include focus-ring(2px);
+		}
+
+		&__label {
+			font-size: 1.3rem;
+			font-weight: 700;
+		}
+
+		&__chevron {
+			flex-shrink: 0;
+			width: 0.7rem;
+			height: 0.7rem;
+			border-left: 2px solid $raspberry;
+			border-bottom: 2px solid $raspberry;
+			transition: transform 200ms ease;
+
+			// closed: points left, the way the rail opens
+			&.is-arrow-closed {
+				transform: translateX(1px) rotate(45deg);
+			}
+
+			&.is-arrow-open {
+				transform: translateX(-1px) rotate(-135deg);
+			}
 		}
 	}
 
@@ -104,7 +131,7 @@
 		flex-direction: row;
 		justify-content: space-evenly;
 		margin-left: 1rem;
-		border-left: 2px solid lightgrey;
+		border-left: 1px solid $rule;
 		width: 75%;
 	}
 

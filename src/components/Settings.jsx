@@ -38,7 +38,9 @@ function Settings() {
 			}),
 		);
 		setStatus(
-			ok ? 'Changes saved.' : "Couldn't save your changes. Try again.",
+			ok
+				? { ok, text: 'Changes saved.' }
+				: { ok, text: "Couldn't save your changes. Try again." },
 		);
 	};
 
@@ -57,21 +59,25 @@ function Settings() {
 					>
 						<img src={profile.profile_picture} alt="user profile" />
 					</figure>
-					<div>
-						<input
-							aria-label="First Name"
-							placeholder="e.g. Jane"
-							name="first_name"
-							onChange={handleChange}
-							value={form.first_name}
-						/>
-						<input
-							aria-label="Last Name"
-							placeholder="e.g. Doe"
-							name="last_name"
-							onChange={handleChange}
-							value={form.last_name}
-						/>
+					<div className="settings-names">
+						<label className="settings-field">
+							<span>First name</span>
+							<input
+								placeholder="e.g. Jane"
+								name="first_name"
+								onChange={handleChange}
+								value={form.first_name}
+							/>
+						</label>
+						<label className="settings-field">
+							<span>Last name</span>
+							<input
+								placeholder="e.g. Doe"
+								name="last_name"
+								onChange={handleChange}
+								value={form.last_name}
+							/>
+						</label>
 					</div>
 					<button
 						className="btn-onboarding-confirm"
@@ -80,7 +86,16 @@ function Settings() {
 					>
 						Save Changes
 					</button>
-					{status && <p role="status">{status}</p>}
+					{status && (
+						<p
+							role="status"
+							className={`settings-status ${
+								status.ok ? 'is-success' : 'is-error'
+							}`}
+						>
+							{status.text}
+						</p>
+					)}
 				</form>
 			</section>
 			{modal && (

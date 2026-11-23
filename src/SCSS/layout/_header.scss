@@ -8,10 +8,11 @@
 }
 
 .lp-header {
+	--focus-ring: #{$surface};
 	width: 100%;
-	background-color: $color-primary-nav;
-	color: $color-white;
-	font-size: 1.8rem;
+	background-color: $ink;
+	color: $surface;
+	font-size: 1.6rem;
 
 	&__inner {
 		@include lp-container;
@@ -24,23 +25,28 @@
 	&__nav {
 		display: flex;
 		align-items: center;
-		gap: 2.8rem;
+		gap: $space-3;
 	}
 
 	&__link {
 		@include lp-text-link;
 		font-weight: 400;
+		line-height: 2rem;
 	}
 
+	// Quiet outlined action; its right edge lines up with the hero photo
 	&__login {
-		padding: 0.8rem 1.8rem;
-		border: 1px solid rgba($color-white, 0.5);
-		border-radius: 0.8rem;
+		min-height: 4rem;
+		padding: 0 $space-2;
+		border: 1px solid rgba($surface, 0.45);
+		border-radius: $radius-control;
+		font-size: 1.5rem;
+		font-weight: 700;
 
 		&:hover,
 		&:focus-visible {
-			border-color: $color-white;
-			background-color: rgba($color-white, 0.08);
+			border-color: $surface;
+			background-color: rgba($surface, 0.08);
 			text-decoration: none;
 		}
 	}
@@ -51,12 +57,14 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 0.4rem;
-	color: $color-white;
+	color: $surface;
 	border-radius: 0.4rem;
 
 	&__logo {
-		// nudge down to compensate for the drop shadow baked into the svg
+		// nudge down to compensate for the drop shadow baked into the svg,
+		// and pull left so the gift (not its padding) meets the content edge
 		margin-top: 0.6rem;
+		margin-left: -0.9rem;
 		flex-shrink: 0;
 	}
 
@@ -73,7 +81,7 @@
 	}
 
 	&:focus-visible {
-		outline: 2px solid $color-white;
+		outline: 2px solid $surface;
 		outline-offset: 4px;
 	}
 }

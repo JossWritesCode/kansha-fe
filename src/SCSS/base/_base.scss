@@ -9,8 +9,15 @@
 	scrollbar-width: thin;
 }
 
+// The reset above removes outlines; keyboard users still get a clear,
+// offset ring. Dark surfaces override --focus-ring with a light color.
+:focus-visible {
+	@include focus-ring(2px);
+}
+
 body {
 	box-sizing: border-box;
+	color: $ink;
 }
 
 html,
@@ -20,6 +27,13 @@ body,
 #App > div {
 	min-height: 100%;
 	background: $color-white;
+}
+
+// The signed-in workspace sits on warm paper
+.app-canvas {
+	min-height: 100vh;
+	background-color: $paper;
+	color: $ink;
 }
 
 .time {

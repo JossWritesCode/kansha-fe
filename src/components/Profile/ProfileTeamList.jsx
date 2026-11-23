@@ -38,74 +38,89 @@ function ProfileTeamList() {
 	}, [selectedTeam]);
 
 	return (
-		<section className="teams-dashboard">
+		<section className="teams-dashboard members-panel">
 			<h2 className="teams-dashboard-title">
 				{teams ? 'Teams' : `${profile.org_name} Members`}
 			</h2>
-			<div className="dropdown-time-div">
-				{teams && (
-					<Dropdown
-						placeholder={teams[0].name}
-						classNombre="custom-select dashboard"
-						setSelection={setSelectedTeam}
-					>
-						{teams.map((team) => (
-							<option key={team.team_id} value={team.team_id}>
-								{team.name}
-							</option>
-						))}
-					</Dropdown>
-				)}
-			</div>
-			<div className="employee-filter-container">
-				<h3>Filter:</h3>
-				<button type="button" className="btn-filter">
-					Members
-				</button>
-				{!teams && (
-					<div className="employee-search-container">
-						<input
-							value={filter}
-							onChange={(event) => setFilter(event.target.value)}
-							type="text"
-							id="search"
-							name="search"
-							aria-label="Search for member"
-							placeholder="Search for member"
-						/>
+			<div className="directory">
+				<div className="directory-header">
+					{teams && (
+						<div className="dropdown-time-div">
+							<Dropdown
+								placeholder={teams[0].name}
+								classNombre="custom-select dashboard"
+								setSelection={setSelectedTeam}
+							>
+								{teams.map((team) => (
+									<option
+										key={team.team_id}
+										value={team.team_id}
+									>
+										{team.name}
+									</option>
+								))}
+							</Dropdown>
+						</div>
+					)}
+					<div className="employee-filter-container">
+						<span className="filter-label">Filter:</span>
+						<button
+							type="button"
+							className="btn-filter is-active"
+							aria-pressed="true"
+						>
+							Members
+						</button>
 					</div>
+					{!teams && (
+						<div className="directory-tools">
+							<div className="employee-search-container">
+								<input
+									value={filter}
+									onChange={(event) =>
+										setFilter(event.target.value)
+									}
+									type="text"
+									id="search"
+									name="search"
+									aria-label="Search for member"
+									placeholder="Search for member"
+								/>
+							</div>
+						</div>
+					)}
+				</div>
+				<table className="team-member-table">
+					<tbody>
+						{teams
+							? teamDetails?.team_members?.map((member) => (
+									<Member
+										key={member.member_id || member.id}
+										member={member}
+										teamDetails={teamDetails}
+										setTeamDetails={setTeamDetails}
+									/>
+								))
+							: orgSearch.employees.map((member) => (
+									<OrgEmployees
+										key={member.id}
+										employee={member}
+										onDashboard
+									/>
+								))}
+					</tbody>
+				</table>
+				{!teams && orgSearch.hasMore && (
+					<button
+						type="button"
+						className="btn-filter show-more"
+						onClick={orgSearch.loadMore}
+						disabled={orgSearch.isLoading}
+					>
+						Show more
+					</button>
 				)}
 			</div>
-			<table className="team-member-table">
-				<tbody>
-					{teams
-						? teamDetails?.team_members?.map((member) => (
-								<Member
-									key={member.member_id || member.id}
-									member={member}
-									teamDetails={teamDetails}
-									setTeamDetails={setTeamDetails}
-								/>
-							))
-						: orgSearch.employees.map((member) => (
-								<OrgEmployees
-									key={member.id}
-									employee={member}
-									onDashboard
-								/>
-							))}
-				</tbody>
-			</table>
-			{!teams && orgSearch.hasMore && (
-				<button
-					type="button"
-					className="btn-filter"
-					onClick={orgSearch.loadMore}
-					disabled={orgSearch.isLoading}
-				>
-					Show more
-				</button>
-			)}
 		</section>
 	);
 }

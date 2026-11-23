@@ -104,5 +104,5 @@ export const App = () => {
 		);
 	}
 
-	return <Loader type="Rings" color="#c91757" height={100} width={100} />;
+	return <Loader type="Rings" color="#b71952" height={100} width={100} />;
 };
