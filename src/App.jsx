@@ -6,6 +6,7 @@ import { login, authorizeUser } from './store/actions/user-actions';
 import AboutUs from './components/Landing/AboutUs';
 import Auth from './utils/auth';
 import { ProtectedRoute } from './components/Auth';
+import LoginError from './components/Auth/LoginError';
 import Onboarding from './components/Onboarding/Onboarding';
 import UserUpload from './components/UserUpload/UserUpload';
 import Landing from './components/Landing';
@@ -57,12 +58,19 @@ export const App = () => {
 
 	if (init.error) {
 		return (
-			<Switch>
-				<Route exact path="/" component={Landing} />
-				<Route path="/login" component={Login} />)
-				<Route path="/aboutus" component={AboutUs} />)
-				<Route default render={() => <Redirect to="/" />} />
-			</Switch>
+			<>
+				<LoginError
+					error={error}
+					hasValidToken={auth.isAuthenticated()}
+					onRetry={auth.login}
+				/>
+				<Switch>
+					<Route exact path="/" component={Landing} />
+					<Route path="/login" component={Login} />
+					<Route path="/aboutus" component={AboutUs} />
+					<Route default render={() => <Redirect to="/" />} />
+				</Switch>
+			</>
 		);
 	} else if (init.onboarding) {
 		return <Route path="/onboarding" component={Onboarding} />;
