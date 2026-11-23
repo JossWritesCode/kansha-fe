@@ -1,3 +1,41 @@
 @mixin boxshadow() {
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
 }
+
+// Centered, max-width content column with a phone-safe side gutter
+@mixin lp-container() {
+	width: 100%;
+	max-width: $lp-max-width;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 2rem;
+	padding-right: 2rem;
+
+	@media (min-width: $bp-md) {
+		padding-left: 4rem;
+		padding-right: 4rem;
+	}
+}
+
+// Text link / text button on a dark background
+@mixin lp-text-link() {
+	background: none;
+	border: 0;
+	padding: 0;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+	text-underline-offset: 0.4rem;
+	transition: color 200ms ease, background-color 200ms ease,
+		border-color 200ms ease;
+
+	&:hover {
+		text-decoration: underline;
+	}
+
+	&:focus-visible {
+		outline: 2px solid currentColor;
+		outline-offset: 4px;
+		border-radius: 0.4rem;
+	}
+}

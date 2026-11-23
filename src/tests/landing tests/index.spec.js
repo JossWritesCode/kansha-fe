@@ -10,14 +10,14 @@ describe('Components in index', () => {
 	it('renders correctly', () => {
 		const wrapper = shallow(<Index />);
 
-		expect(wrapper.exists());
+		expect(wrapper.exists()).toBe(true);
 	});
 
-	it('renders components', () => {
+	it('renders header, page sections, and footer', () => {
 		const wrapper = shallow(<Index />);
 
-		expect(wrapper.find('main').text()).toEqual(
-			'<Header /><Main /><WhyKansha /><DidYouKnow /><ListOfFeatures /><ResultsYouCanSee /><EnterEmail /><Footer />',
+		expect(wrapper.text()).toEqual(
+			'<Header /><Main /><WhyKansha /><DidYouKnow /><ListOfFeatures /><ResultsYouCanSee /><Footer />',
 		);
 	});
 });

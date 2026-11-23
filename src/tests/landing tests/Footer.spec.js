@@ -10,25 +10,18 @@ describe('Footer Component', () => {
 	it('renders correctly', () => {
 		const wrapper = shallow(<Footer />);
 
-		expect(wrapper.exists());
+		expect(wrapper.exists()).toBe(true);
 	});
 
-	it('renders Kansha on footer for h1', () => {
+	it('renders the Kansha wordmark', () => {
 		const wrapper = shallow(<Footer />);
 
-		expect(wrapper.find('h1').text()).toEqual('Kansha');
+		expect(wrapper.find('.lp-brand__name').text()).toEqual('Kansha');
 	});
-});
 
-describe('Listed items', () => {
-	it('renders Instagram in first span', () => {
+	it('renders a login button', () => {
 		const wrapper = shallow(<Footer />);
 
-		expect(
-			wrapper
-				.find('span')
-				.first()
-				.text(),
-		).toEqual('Instagram');
+		expect(wrapper.find("[data-test='login']").text()).toEqual('Login');
 	});
 });
