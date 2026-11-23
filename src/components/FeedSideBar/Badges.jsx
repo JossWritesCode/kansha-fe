@@ -1,29 +1,22 @@
 import React from 'react';
 import { Badge } from '../Profile/styled';
 
-function Badges({ userBadges, badges }) {
+/* `userBadges` comes from countBadges() */
+function Badges({ userBadges }) {
 	return (
 		<ul>
-			{badges && (
-				<>
-					{userBadges.map(badge => {
-						if (badge.badge) {
-							return (
-								<Badge key={badge.id} count={badge.count}>
-									<img
-										className="badge-profile"
-										src={badge.badge}
-										alt="badge"
-										width="140"
-									/>
-								</Badge>
-							);
-						} else {
-							return null;
-						}
-					})}
-				</>
-			)}
+			{userBadges
+				.filter((badge) => badge.badge)
+				.map((badge) => (
+					<Badge key={badge.id} count={badge.count}>
+						<img
+							className="badge-profile"
+							src={badge.badge}
+							alt="badge"
+							width="140"
+						/>
+					</Badge>
+				))}
 		</ul>
 	);
 }

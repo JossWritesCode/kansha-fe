@@ -1,30 +1,31 @@
 import React from 'react';
 import OrgEmployees from './OrgEmployees';
 
+/*
+	The organization's employees. With `selectedIds`/`onToggle` the rows get
+	checkboxes for picking team members; otherwise admins can delete rows.
+*/
 const OrganizationEmployeesTable = ({
 	employees,
-	empButton,
-	addTeamMember,
 	setEmployees,
-	createTeamsBtn,
+	selectedIds,
+	onToggle,
 }) => {
+	const selectable = Boolean(onToggle);
 	return (
 		<table className="employees-table">
 			<tbody>
-				{employees.map(data => {
-					return (
-						<OrgEmployees
-							key={data.id}
-							id={data.id}
-							employee={data}
-							empButton={empButton}
-							addTeamMember={addTeamMember}
-							setEmployees={setEmployees}
-							onDashboard={false}
-							createTeamsBtn={createTeamsBtn}
-						/>
-					);
-				})}
+				{employees.map((employee) => (
+					<OrgEmployees
+						key={employee.id}
+						employee={employee}
+						selectable={selectable}
+						selected={selectable && selectedIds.has(employee.id)}
+						onToggle={onToggle}
+						deletable={!selectable}
+						setEmployees={setEmployees}
+					/>
+				))}
 			</tbody>
 		</table>
 	);

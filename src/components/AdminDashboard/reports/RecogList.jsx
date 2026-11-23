@@ -6,21 +6,29 @@ function RecogList({ rank, count }) {
 		<ul className="recog-list-container">
 			{rank.map((person, idx) => {
 				return (
-					<li className="most-recog-individual" key={idx}>
+					<li
+						className="most-recog-individual"
+						key={person.id ?? idx}
+					>
 						<img
 							className="most-rec-profile-pic"
 							src={person.profile_picture}
-							alt="most thanked individual"></img>
+							alt="most thanked individual"
+						></img>
 						<div className="most-rec-name-to-heart">
 							<div className="most-recog-name">
-								<p>{`${
-									person.first_name
-								} ${person.last_name[0].toUpperCase()}`}</p>
+								<p>
+									{person.first_name}{' '}
+									{(person.last_name || '')
+										.charAt(0)
+										.toUpperCase()}
+								</p>
 							</div>
 							<div className="most-recog-progress">
 								<progress
 									value={person.count}
-									max={count}></progress>
+									max={count}
+								></progress>
 							</div>
 							<div className="most-recog-heart">
 								<p>{person.count} </p>

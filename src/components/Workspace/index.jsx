@@ -1,65 +1,64 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { axiosWithAuth } from '../../utils/axiosWithAuth';
+import { selectIsAdmin } from '../../store/selectors';
+import { useEmployeeSearch } from '../../hooks/useEmployeeSearch';
 import WorkspaceCard from './WorkspaceCard';
 
 function Workspace() {
-	const [team, setTeam] = useState([]);
 	const [filter, setFilter] = useState('');
 	const history = useHistory();
-	const { profile } = useSelector(({ user }) => ({
-		...user,
-	}));
-
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const { data } = await axiosWithAuth().get(
-					`/employees/organizations?search=${filter}`,
-				);
-				setTeam(data.employees);
-			} catch (err) {
-				console.error(err);
-			}
-		};
-		fetchData();
-	}, [filter]);
-
-	const handleClick = () => {
-		history.push('/add-user');
-	};
+	const isAdmin = useSelector(selectIsAdmin);
+	const { employees, setEmployees, hasMore, loadMore, isLoading, error } =
+		useEmployeeSearch(filter);
 
 	return (
 		<main className="workspace">
 			<header>
 				<h1>Workspace</h1>
-				{profile.user_type.toLowerCase() === 'admin' && (
-					<div className="add-users-container" onClick={handleClick}>
+				{isAdmin && (
+					<button
+						type="button"
+						className="add-users-container"
+						onClick={() => history.push('/add-user')}
+					>
 						<i
 							id="add-user-icon"
 							className="fas fa-user-plus"
-							style={{ display: 'flex' }}></i>
+							style={{ display: 'flex' }}
+						></i>
 						<p> Add Users</p>
-					</div>
+					</button>
 				)}
 				<input
 					placeholder="Search Workspace…"
+					aria-label="Search Workspace"
 					value={filter}
-					onChange={e => setFilter(e.target.value)}
+					onChange={(e) => setFilter(e.target.value)}
 					type="text"
 				/>
 			</header>
+			{error && <p role="alert">Couldn't load your workspace.</p>}
 			<ul className="workspace-card-container">
-				{team.map(user => (
+				{employees.map((user) => (
 					<WorkspaceCard
 						key={user.id}
 						profile={user}
-						isAdmin={profile.user_type.toLowerCase() === 'admin'}
-						setTeam={setTeam}
+						isAdmin={isAdmin}
+						setTeam={setEmployees}
 					/>
 				))}
 			</ul>
+			{hasMore && (
+				<button
+					type="button"
+					className="btn-filter"
+					onClick={loadMore}
+					disabled={isLoading}
+				>
+					Show more
+				</button>
+			)}
 		</main>
 	);
 }

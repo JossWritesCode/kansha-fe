@@ -4,34 +4,29 @@ import { axiosWithAuth } from '../../../utils/axiosWithAuth';
 import RecogList from './RecogList';
 import LimitDropdown from './LimitDropdown';
 
-function LeadershipBoard(props) {
+function LeadershipBoard({ type, title, filter }) {
 	const [rank, setRank] = useState([]);
 	const [count, setCount] = useState(0);
 	const [limit, setLimit] = useState(5);
 
-	const handleLimit = e => {
-		setLimit(e);
-	};
-
 	useEffect(() => {
 		axiosWithAuth()
-			.get(
-				`/reports/top?type=${props.type}&limit=${limit}&time=${props.filter}`,
-			)
-			.then(res => {
+			.get(`/reports/top?type=${type}&limit=${limit}&time=${filter}`)
+			.then((res) => {
 				setRank(res.data.employees);
 				setCount(res.data.count);
 			})
-			.catch(err => {
-				console.log(err);
+			.catch(() => {
+				setRank([]);
+				setCount(0);
 			});
-	}, [props.type, props.filter, limit]);
+	}, [type, filter, limit]);
 
 	return (
 		<div className="most-recog-container">
 			<div className="most-recog-title-container">
-				<h3>{props.title}</h3>
-				<LimitDropdown limit={limit} handleLimit={handleLimit} />
+				<h3>{title}</h3>
+				<LimitDropdown limit={limit} handleLimit={setLimit} />
 			</div>
 
 			<RecogList rank={rank} count={count} />

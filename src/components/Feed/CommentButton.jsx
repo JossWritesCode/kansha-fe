@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { ReactComponent as AddComment } from '../../assets/addcomment.svg';
 
+/* Shows whether the logged-in user (`id`) has commented, and opens the comments */
 export const CommentButton = ({
 	comments,
 	id,
@@ -8,26 +9,22 @@ export const CommentButton = ({
 	handleComment,
 	inModal,
 }) => {
-	const userComment = useMemo(() => {
-		if (comments) {
-			return comments.reduce(
-				(a, comment) => (id === comment.user_id ? comment.id : a),
-				0,
-			);
-		} else {
-			return 0;
-		}
-	}, [comments, id]);
+	const hasCommented = useMemo(
+		() => Boolean(comments?.some((comment) => comment.user_id === id)),
+		[comments, id],
+	);
 
 	return (
 		<button
-			className={`${open ? `comment-button` : `hidden-rec`}`}
+			type="button"
+			className={open ? 'comment-button' : 'hidden-rec'}
 			aria-label="add a comment"
-			onClick={handleComment}>
+			onClick={handleComment}
+		>
 			<AddComment
-				className={userComment ? 'comment-full' : 'comment-empty'}
+				className={hasCommented ? 'comment-full' : 'comment-empty'}
 			/>
-			{inModal && <p>{comments?.length}</p>}
+			{inModal && <p>{comments?.length || 0}</p>}
 		</button>
 	);
 };

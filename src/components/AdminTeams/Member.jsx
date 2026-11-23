@@ -1,55 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { axiosWithAuth } from '../../utils/axiosWithAuth';
+import { selectIsAdmin } from '../../store/selectors';
+import { useBadges } from '../../hooks/useBadges';
 import Modal from '../Modal';
 import RecogModal from '../RecogModal/index';
 import ProfileModal from '../FeedSideBar/ProfileModal';
 import DeleteModal from './DeleteModal';
-import { axiosWithAuth } from '../../utils/axiosWithAuth';
-
-// Icon import
 import { ReactComponent as DeleteIcon } from '../../assets/TeamsIcons/delete.svg';
 import { ReactComponent as RecognitionIcon } from '../../assets/TeamsIcons/recognition.svg';
 
-function Member({ profile, teamDetails, member, setTeamDetails, myProfile }) {
-	const [modal, setModal] = useState(false);
+/* One row in a team's member list */
+function Member({ member, teamDetails, setTeamDetails }) {
+	const isAdmin = useSelector(selectIsAdmin);
+	const { badges } = useBadges();
+	const [recogModal, setRecogModal] = useState(false);
 	const [deleteModal, setDeleteModal] = useState(false);
-	const [profileSelect, setProfileSelect] = useState(false);
-	const [badges, setBadges] = useState([]);
+	const [profileModal, setProfileModal] = useState(false);
+	const [error, setError] = useState(null);
 
-	const handleDeleteClick = e => {
-		e.preventDefault();
-		setDeleteModal(true);
-	};
-
-	const handleProfileClick = e => {
-		e.preventDefault();
-
-		setProfileSelect(true);
-	};
-
-	const handleDeleteTeamMember = e => {
+	const handleDeleteTeamMember = (e) => {
 		e.preventDefault();
 		axiosWithAuth()
 			.delete(`/teams/members/${member.member_id}`)
 			.then(() => {
-				setTeamDetails(previous => ({
+				setDeleteModal(false);
+				setTeamDetails((previous) => ({
 					...previous,
 					team_members: previous.team_members.filter(
-						tm => tm.member_id !== member.member_id,
+						(tm) => tm.member_id !== member.member_id,
 					),
 				}));
+			})
+			.catch(() => {
 				setDeleteModal(false);
+				setError("Couldn't remove this member. Try again.");
 			});
 	};
-	useEffect(() => {
-		axiosWithAuth()
-			.get('/badges')
-			.then(res => {
-				setBadges(res.data);
-			})
-			.catch(err => {
-				console.error(err);
-			});
-	}, []);
 
 	return (
 		<>
@@ -59,44 +46,44 @@ function Member({ profile, teamDetails, member, setTeamDetails, myProfile }) {
 					handleDeleteTeamMember={handleDeleteTeamMember}
 				/>
 			)}
-
-			{profileSelect && (
+			{profileModal && (
 				<ProfileModal
-					close={setModal}
-					setProfileSelect={setProfileSelect}
-					profile={profile}
+					close={() => setProfileModal(false)}
 					badges={badges}
-					profileId={profile.id}
+					profileId={member.id}
 				/>
 			)}
-
 			<tr className="indiv-team">
 				<td>
-					<div
-						className="teams-employee-info"
-						onClick={handleProfileClick}>
+					<button
+						type="button"
+						className="teams-employee-link teams-employee-info"
+						onClick={() => setProfileModal(true)}
+					>
 						<img
 							src={member.profile_picture}
-							alt="profile img"
+							alt=""
 							className="teams-profile-picture"
-							style={{ cursor: 'pointer' }}
 						/>
 						<h3>
 							{member.first_name} {member.last_name}
 						</h3>
-					</div>
+					</button>
+					{error && <p role="alert">{error}</p>}
 				</td>
 				<td className="recognition-btn">
 					<RecognitionIcon
-						onClick={() => setModal(!modal)}
+						aria-label={`Recognize ${member.first_name}`}
+						onClick={() => setRecogModal(true)}
 						style={{
 							height: '20px',
 							width: '20px',
+							cursor: 'pointer',
 						}}
 					/>
-					{modal && (
-						<Modal close={setModal}>
-							<RecogModal profile={profile} />
+					{recogModal && (
+						<Modal close={setRecogModal}>
+							<RecogModal profile={member} />
 						</Modal>
 					)}
 				</td>
@@ -106,14 +93,12 @@ function Member({ profile, teamDetails, member, setTeamDetails, myProfile }) {
 				<td>
 					<h3>{teamDetails.name}</h3>
 				</td>
-				{myProfile.user_type.toLowerCase() === 'admin' && (
+				{isAdmin && (
 					<td className="icons">
 						<DeleteIcon
-							onClick={handleDeleteClick}
-							style={{
-								marginRight: '2rem',
-								cursor: 'pointer',
-							}}
+							aria-label={`Remove ${member.first_name} from the team`}
+							onClick={() => setDeleteModal(true)}
+							style={{ marginRight: '2rem', cursor: 'pointer' }}
 						/>
 					</td>
 				)}

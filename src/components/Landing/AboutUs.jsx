@@ -131,9 +131,12 @@ export default function AboutUs() {
 						<h4>Team Lead</h4>
 					</div>
 					<div className="labs-21-team">
-						{labs21.map(data => {
+						{labs21.map((data) => {
 							return (
-								<div className="team-member-profile">
+								<div
+									className="team-member-profile"
+									key={data.name}
+								>
 									<img
 										className="aboutUs-picture"
 										src={data.imageUrl}
@@ -158,9 +161,12 @@ export default function AboutUs() {
 						<h4>Team Lead</h4> */}
 					</div>
 					<div className="labs-19-team">
-						{labs19.map(data => {
+						{labs19.map((data) => {
 							return (
-								<div className="team-member-profile">
+								<div
+									className="team-member-profile"
+									key={data.name}
+								>
 									<img
 										className="aboutUs-picture"
 										src={data.imageUrl}

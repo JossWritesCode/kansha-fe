@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import Loader from 'react-loader-spinner';
 
 import { login, authorizeUser } from './store/actions/user-actions';
-import AboutUs from './components/Landing/AboutUs';
+import { selectIsAdmin } from './store/selectors';
 import Auth from './utils/auth';
-import { ProtectedRoute } from './components/Auth';
-import LoginError from './components/Auth/LoginError';
-import Onboarding from './components/Onboarding/Onboarding';
-import UserUpload from './components/UserUpload/UserUpload';
-import Landing from './components/Landing';
-import { UserProfile } from './components/Profile';
 import { Login } from './components/Auth';
+import LoginError from './components/Auth/LoginError';
+import AboutUs from './components/Landing/AboutUs';
+import Landing from './components/Landing';
+import Onboarding from './components/Onboarding/Onboarding';
+import Dashboard from './components/Dashboard';
+import AdminDashboard from './components/AdminDashboard/AdminDashboard';
+import { Profile } from './components/Profile';
 import Workspace from './components/Workspace';
 import FileUpload from './components/FileUpload';
 import Settings from './components/Settings';
-import Dashboard from './components/Dashboard';
-import AdminDashboard from './components/AdminDashboard/AdminDashboard';
+import UserUpload from './components/UserUpload/UserUpload';
 import OrganizationHome from './components/AdminTeams/OrganizationHome';
 import TeamMemberList from './components/AdminTeams/TeamMemberList';
-import Loader from 'react-loader-spinner';
 
 const auth = new Auth();
 
@@ -29,24 +29,24 @@ export const App = () => {
 		error: false,
 		onboarding: false,
 	});
-	const { profile, error, isOnboarding } = useSelector(({ user }) => ({
-		...user,
-	}));
+	const profileId = useSelector((state) => state.user.profile.id);
+	const error = useSelector((state) => state.user.error);
+	const isOnboarding = useSelector((state) => state.user.isOnboarding);
+	const isAdmin = useSelector(selectIsAdmin);
 	const dispatch = useDispatch();
 	const history = useHistory();
 
+	// Runs once: either finish an auth0 redirect or load the user
 	useEffect(() => {
-		if (!init.fetched) {
-			if (window.location.hash) {
-				dispatch(authorizeUser(auth));
-			} else {
-				dispatch(login());
-			}
+		if (window.location.hash) {
+			dispatch(authorizeUser(auth));
+		} else {
+			dispatch(login());
 		}
-	}, [dispatch, init]);
+	}, [dispatch]);
 
 	useEffect(() => {
-		if (profile.id) {
+		if (profileId) {
 			setInit((prev) => ({ ...prev, fetched: true }));
 		} else if (error) {
 			setInit((prev) => ({ ...prev, fetched: true, error: true }));
@@ -54,7 +54,7 @@ export const App = () => {
 			setInit((prev) => ({ ...prev, fetched: true, onboarding: true }));
 			history.push('/onboarding/step-1');
 		}
-	}, [profile, error, isOnboarding, setInit, history]);
+	}, [profileId, error, isOnboarding, history]);
 
 	if (init.error) {
 		return (
@@ -68,57 +68,41 @@ export const App = () => {
 					<Route exact path="/" component={Landing} />
 					<Route path="/login" component={Login} />
 					<Route path="/aboutus" component={AboutUs} />
-					<Route default render={() => <Redirect to="/" />} />
+					<Redirect to="/" />
 				</Switch>
 			</>
 		);
-	} else if (init.onboarding) {
+	}
+
+	if (init.onboarding) {
 		return <Route path="/onboarding" component={Onboarding} />;
-	} else if (init.fetched) {
+	}
+
+	if (init.fetched) {
 		return (
 			<Dashboard>
 				<Switch>
-					<ProtectedRoute
+					<Route
 						exact
 						path="/"
-						component={
-							profile.user_type.toLowerCase() === 'admin'
-								? AdminDashboard
-								: UserProfile
-						}
+						component={isAdmin ? AdminDashboard : Profile}
 					/>
-					<ProtectedRoute
-						exact
-						path="/profile"
-						component={UserProfile}
-					/>
-
-					<ProtectedRoute path="/workspace" component={Workspace} />
-					<ProtectedRoute
+					<Route exact path="/profile" component={Profile} />
+					<Route path="/workspace" component={Workspace} />
+					<Route
 						exact
 						path="/organization"
 						component={OrganizationHome}
 					/>
-					<ProtectedRoute
-						exact
-						path="/teams/:id"
-						component={TeamMemberList}
-					/>
-					<ProtectedRoute path="/upload" component={FileUpload} />
-					<ProtectedRoute path="/settings" component={Settings} />
-					<ProtectedRoute path="/add-user" component={UserUpload} />
-					<Route default render={() => <Redirect to="/" />} />
+					<Route exact path="/teams/:id" component={TeamMemberList} />
+					<Route path="/upload" component={FileUpload} />
+					<Route path="/settings" component={Settings} />
+					<Route path="/add-user" component={UserUpload} />
+					<Redirect to="/" />
 				</Switch>
 			</Dashboard>
 		);
-	} else {
-		return (
-			<Loader
-				type="Rings"
-				color="#c91757"
-				height={100}
-				width={100}
-			/>
-		);
 	}
+
+	return <Loader type="Rings" color="#c91757" height={100} width={100} />;
 };

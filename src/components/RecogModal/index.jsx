@@ -1,84 +1,72 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { ReactComponent as AddBadgeIcon } from '../../assets/addbadge.svg';
 import { ReactComponent as CloseIcon } from '../../assets/closex.svg';
 import { sendRecog } from '../../store/actions/recog-actions';
-import { axiosWithAuth } from '../../utils/axiosWithAuth';
-import { useDispatch, useSelector } from 'react-redux';
+import { useBadges } from '../../hooks/useBadges';
 
+/* Compose and send a recognition to `profile`. Rendered inside a Modal. */
 function RecogModal({ profile, close }) {
 	const dispatch = useDispatch();
-	const user = useSelector(({ user }) => ({
-		...user,
-	}));
-	const [isTyping, setIsTyping] = useState(true);
+	const senderId = useSelector((state) => state.user.profile.id);
+	const isSending = useSelector((state) => state.recog.isSending);
+	const { badges, badgeById } = useBadges();
+
+	const [isPickingBadge, setIsPickingBadge] = useState(false);
 	const [sent, setSent] = useState(false);
-	const [badges, setBadges] = useState([]);
-	const [recog, setRecog] = useState({
-		message: '',
-		sender: user.profile.id,
-		recipient: profile.id,
-		date: new Date(Date.now()),
-		badge_id: null,
-	});
-	const {
-		first_name,
-		last_name,
-		job_title,
-		department,
-		profile_picture,
-	} = profile;
+	const [error, setError] = useState(null);
+	const [message, setMessage] = useState('');
+	const [badgeId, setBadgeId] = useState(null);
 
-	useEffect(() => {
-		axiosWithAuth()
-			.get('/badges')
-			.then(res => {
-				setBadges(res.data);
-			})
-			.catch(err => {
-				console.log(err);
-			});
-	}, []);
+	const { first_name, last_name, job_title, department, profile_picture } =
+		profile;
+	const selectedBadge = badgeId ? badgeById[badgeId] : null;
 
-	const handleChange = event => {
-		setRecog({ ...recog, [event.target.name]: event.target.value });
-	};
-
-	const handleSubmit = event => {
+	const handleSubmit = async (event) => {
 		event.preventDefault();
-		dispatch(sendRecog({ ...recog, date: new Date() }));
-
-		setSent(true);
+		if (!message.trim()) return;
+		setError(null);
+		const ok = await dispatch(
+			sendRecog({
+				message: message.trim(),
+				sender: senderId,
+				recipient: profile.id,
+				badge_id: badgeId,
+				date: new Date(),
+			}),
+		);
+		if (ok) {
+			setSent(true);
+		} else {
+			setError("Your recognition couldn't be sent. Try again.");
+		}
 	};
 
-	const handleSwitch = badge_id => {
-		setRecog({ ...recog, badge_id });
-		setIsTyping(true);
+	const chooseBadge = (id) => {
+		setBadgeId(id);
+		setIsPickingBadge(false);
 	};
 
-	const removeBadge = () => {
-		setRecog({ ...recog, badge_id: null });
-	};
+	if (sent) {
+		return (
+			<div
+				style={{
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'center',
+				}}
+			>
+				<p style={{ fontSize: '1.6rem' }}>
+					Your recognition has been sent!
+				</p>
+				<button className="btn-modal" onClick={() => close(false)}>
+					Ok
+				</button>
+			</div>
+		);
+	}
 
-	const handleClose = () => {
-		setSent(false);
-		close(false);
-	};
-
-	return sent ? (
-		<div
-			style={{
-				display: 'flex',
-				flexDirection: 'column',
-				alignItems: 'center',
-			}}>
-			<p style={{ fontSize: '1.6rem' }}>
-				Your recognition has been sent!
-			</p>
-			<button className="btn-modal" onClick={handleClose}>
-				Ok
-			</button>
-		</div>
-	) : (
+	return (
 		<section className="rec-modal">
 			<section>
 				<img src={profile_picture} alt="" />
@@ -88,61 +76,67 @@ function RecogModal({ profile, close }) {
 				<p>{job_title}</p>
 				<p>{department}</p>
 			</section>
-			{isTyping ? (
-				<form>
-					<textarea
-						value={recog.message}
-						name="message"
-						onChange={handleChange}
-						aria-label="Type your message here"
-						placeholder="Type your message here..."
-						multiline="true"
-					/>
-					<section>
-						{recog.badge_id &&
-							badges.reduce((acc, badge) => {
-								if (recog.badge_id === badge.id) {
-									acc.push(
-										<div key={badge.id}>
-											<span
-												role="img"
-												onClick={removeBadge}>
-												-
-											</span>
-											<img src={badge.badge_URL} alt="" />
-										</div>,
-									);
-								}
-								return acc;
-							}, [])}
-					</section>
-					<button
-						onClick={() => setIsTyping(false)}
-						className="corner-button">
-						<AddBadgeIcon />
-					</button>
-					<button className="send-button" onClick={handleSubmit}>
-						Send
-					</button>
-				</form>
-			) : (
+			{isPickingBadge ? (
 				<div>
 					<section>
-						{badges.map(badge => (
+						{badges.map((badge) => (
 							<img
 								src={badge.badge_URL}
-								alt=""
+								alt={badge.badge_name || ''}
 								key={badge.id}
-								onClick={() => handleSwitch(badge.id)}
+								onClick={() => chooseBadge(badge.id)}
 							/>
 						))}
 					</section>
 					<button
-						onClick={() => setIsTyping(true)}
-						className="corner-button">
+						type="button"
+						aria-label="Close badge picker"
+						onClick={() => setIsPickingBadge(false)}
+						className="corner-button"
+					>
 						<CloseIcon />
 					</button>
 				</div>
+			) : (
+				<form onSubmit={handleSubmit}>
+					<textarea
+						value={message}
+						name="message"
+						onChange={(e) => setMessage(e.target.value)}
+						aria-label="Type your message here"
+						placeholder="Type your message here..."
+					/>
+					<section>
+						{selectedBadge && (
+							<div>
+								<span
+									role="button"
+									aria-label="Remove badge"
+									onClick={() => setBadgeId(null)}
+								>
+									-
+								</span>
+								<img src={selectedBadge.badge_URL} alt="" />
+							</div>
+						)}
+					</section>
+					<button
+						type="button"
+						aria-label="Add a badge"
+						onClick={() => setIsPickingBadge(true)}
+						className="corner-button"
+					>
+						<AddBadgeIcon />
+					</button>
+					{error && <p role="alert">{error}</p>}
+					<button
+						type="submit"
+						className="send-button"
+						disabled={!message.trim() || isSending}
+					>
+						Send
+					</button>
+				</form>
 			)}
 		</section>
 	);

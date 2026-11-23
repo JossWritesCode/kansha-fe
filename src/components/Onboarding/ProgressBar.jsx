@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useLocation } from 'react-router-dom';
 
-const ProgressBar = props => {
-	let location = useLocation();
-	const [progress, setProgress] = useState(0);
+const STEPS = 6;
 
-	useEffect(() => {
-		const [page] = location.pathname.match(/\d+/g);
-		setProgress(page);
-		return () => {};
-	}, [location]);
-	return <progress value={progress} max="6"></progress>;
+/* Onboarding progress, from the step number in the URL (/onboarding/step-N) */
+const ProgressBar = () => {
+	const { pathname } = useLocation();
+	const match = pathname.match(/step-(\d+)/);
+	const step = match ? Math.min(Number(match[1]), STEPS) : 0;
+	return (
+		<progress value={step} max={STEPS} aria-label="Onboarding progress" />
+	);
 };
 
 export default ProgressBar;

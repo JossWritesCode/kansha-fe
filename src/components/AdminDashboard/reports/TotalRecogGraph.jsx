@@ -9,12 +9,13 @@ function TotalRecogGraph({ lineFilter }) {
 	useEffect(() => {
 		axiosWithAuth()
 			.get(`/reports/range?time=${lineFilter}`)
-			.then(res => {
+			.then((res) => {
 				setGraphData(Object.values(res.data.results).reverse());
 				setLabels(Object.keys(res.data.results).reverse());
 			})
-			.catch(error => {
-				console.log(error);
+			.catch(() => {
+				setGraphData([]);
+				setLabels([]);
 			});
 	}, [lineFilter]);
 

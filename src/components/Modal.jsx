@@ -1,33 +1,54 @@
-import React, { useRef, useEffect, Children, cloneElement } from 'react';
+import React, {
+	useRef,
+	useEffect,
+	Children,
+	cloneElement,
+	isValidElement,
+} from 'react';
 
+const FADE_STEP = 0.1;
+
+/* Steps an element's opacity towards 1 (direction 1) or 0 (direction -1) */
+const animate = (elRef, frameRef, direction, onDone) => {
+	cancelAnimationFrame(frameRef.current);
+	const step = () => {
+		const el = elRef.current;
+		if (!el) return;
+		const next = parseFloat(el.style.opacity) + direction * FADE_STEP;
+		if (next >= 1 || next <= 0) {
+			el.style.opacity = next >= 1 ? 1 : 0;
+			if (onDone) onDone();
+			return;
+		}
+		el.style.opacity = next;
+		frameRef.current = requestAnimationFrame(step);
+	};
+	step();
+};
+
+/*
+	Fades in on mount and out on close. Each child component receives
+	`close`, so content can close the modal itself.
+*/
 const Modal = ({ close, children }) => {
 	const modal = useRef(null);
+	const frame = useRef(null);
 
 	useEffect(() => {
-		(function fadeIn() {
-			if (!modal.current) return null;
-			let val = parseFloat(modal.current.style.opacity);
-			if (!((val += 0.1) > 1)) {
-				modal.current.style.opacity = val;
-				requestAnimationFrame(fadeIn);
-			}
-		})();
-	}, [modal]);
+		// Read the latest frame id at cleanup: that's the one to cancel
+		const frameRef = frame;
+		animate(modal, frameRef, 1);
+		return () => cancelAnimationFrame(frameRef.current);
+	}, []);
 
-	const closeModal = () => {
-		modal.current.style.opacity = 1;
-		(function fadeOut() {
-			if ((modal.current.style.opacity -= 0.1) < 0) {
-				close(false);
-			} else {
-				requestAnimationFrame(fadeOut);
-			}
-		})();
-	};
+	const closeModal = () => animate(modal, frame, -1, () => close(false));
 
-	const mappedChildren = Children.map(children, child => {
-		return cloneElement(child, { close: close });
-	});
+	// Pass `close` to components only; DOM elements would warn about it
+	const mappedChildren = Children.map(children, (child) =>
+		isValidElement(child) && typeof child.type !== 'string'
+			? cloneElement(child, { close })
+			: child,
+	);
 
 	return (
 		<div className="modal" ref={modal} style={{ opacity: 0 }}>
@@ -36,7 +57,9 @@ const Modal = ({ close, children }) => {
 				<button
 					type="button"
 					className="modal-close"
-					onClick={closeModal}>
+					aria-label="Close"
+					onClick={closeModal}
+				>
 					&#9587;
 				</button>
 				{mappedChildren}

@@ -1,96 +1,75 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { axiosWithAuth } from '../../utils/axiosWithAuth';
+import { selectProfile } from '../../store/selectors';
+import { useBadges } from '../../hooks/useBadges';
+import { countBadges } from './countBadges';
 import Activity from '../FeedSideBar/Activity';
 import Badges from '../FeedSideBar/Badges';
-import { useSelector } from 'react-redux';
-import { ReactComponent as EmptyFeed } from '../../assets/NoBadgeFeed.svg';
-import { ReactComponent as EmptyActivity } from '../../assets/noactivity.svg';
 import ProfileTeamList from './ProfileTeamList';
+import { ReactComponent as EmptyBadges } from '../../assets/NoBadgeFeed.svg';
+import { ReactComponent as EmptyActivity } from '../../assets/noactivity.svg';
 
+/* The logged-in user's own profile: their team, badges and activity */
 export function Profile() {
-	const [badges, setBadges] = useState([]);
-
+	const profile = useSelector(selectProfile);
+	const { badges } = useBadges();
 	const [profileData, setProfileData] = useState({});
-	const { comments, profile, feed } = useSelector(({ liveFeed, user }) => ({
-		...liveFeed,
-		...user,
-	}));
-
-	const id = profile.id;
+	const [error, setError] = useState(false);
+	const { id } = profile;
 
 	useEffect(() => {
-		const fetchData = async () => {
-			const { data: profileData } = await axiosWithAuth().get(
-				`/profile/${id}`,
-			);
-			setProfileData(profileData.peer);
-
-			const { data: badgeData } = await axiosWithAuth().get('/badges');
-			setBadges(badgeData);
+		let cancelled = false;
+		axiosWithAuth()
+			.get(`/profile/${id}`)
+			.then(({ data }) => {
+				if (!cancelled) setProfileData(data.peer || {});
+			})
+			.catch(() => {
+				if (!cancelled) setError(true);
+			});
+		return () => {
+			cancelled = true;
 		};
-		fetchData();
 	}, [id]);
 
-	const userBadges = useMemo(() => {
-		const array = [];
-		if (profileData.rec) {
-			for (const rec of profileData.rec) {
-				if (profileData.id === rec.sender) continue;
-				const { badge_id } = rec;
-				const badge = badges.find((bdg) => bdg.id === badge_id);
-				const exist = array.find((bdg) => bdg.id === badge_id);
-				if (exist) {
-					array[array.indexOf(exist)].count++;
-					continue;
-				}
-				array.push({
-					id: badge_id,
-					badge: badge?.badge_URL,
-					count: 1,
-				});
-			}
-		}
-		return array;
-	}, [profileData, badges]);
-
-	let numberOfBadges = 0;
-	for (let bdg of userBadges) {
-		if (bdg.badge) {
-			numberOfBadges += bdg.count;
-		}
-	}
+	const userBadges = useMemo(
+		() => countBadges(profileData.rec, id, badges),
+		[profileData, id, badges],
+	);
+	const numberOfBadges = userBadges
+		.filter((bdg) => bdg.badge)
+		.reduce((sum, bdg) => sum + bdg.count, 0);
+	const hasActivity = Boolean(profileData.rec?.length);
 
 	return (
 		<main className="container-entire-profile">
 			<section className="my-team-members">
-				<ProfileTeamList myProfile={profile} profile={profileData} />
+				<ProfileTeamList />
 			</section>
-			{feed.length > 0 ? (
+			{error && <p role="alert">Your activity couldn't be loaded.</p>}
+			{numberOfBadges > 0 ? (
 				<section className="main-container-badges">
 					<div className="badges-title-container">
 						<h1 className="title-badges">My badges</h1>
 						<h2>{numberOfBadges}</h2>
 					</div>
 					<div className="profile-badges">
-						<Badges badges={badges} userBadges={userBadges} />
+						<Badges userBadges={userBadges} />
 					</div>
 				</section>
 			) : (
 				<main className="empty-feed">
-					<EmptyFeed />
+					<EmptyBadges />
 				</main>
 			)}
 
-			{feed.length > 0 ? (
+			{hasActivity ? (
 				<section className="activity-card">
 					<h5 className="title-activity-card">My activity</h5>
 					<section id="profile-activity-card">
 						<Activity
 							profileBadges={badges}
-							setProfileInfo={setProfileData}
-							profileId={id}
-							comments={comments}
-							profile={profileData}
 							profileInfo={profileData}
 							inModal={false}
 						/>

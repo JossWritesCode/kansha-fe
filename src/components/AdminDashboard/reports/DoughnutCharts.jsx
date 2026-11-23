@@ -1,89 +1,76 @@
 import React, { useState, useEffect } from 'react';
 import { axiosWithAuth } from '../../../utils/axiosWithAuth';
-import axios from 'axios';
 import TotalRecognitionChart from './TotalRecognitionChart';
 
+const COLORS = ['rgba(201, 23, 87, 0.15)', 'rgba(201, 23, 87, 1)'];
+
+const OPTIONS = {
+	aspectRatio: 1,
+	responsive: true,
+	cutoutPercentage: 90,
+	legend: false,
+};
+
+const chartData = (labels, percent) => ({
+	labels,
+	datasets: [
+		{
+			data: percent == null ? [100, 0] : [100 - percent, percent],
+			backgroundColor: COLORS,
+			hoverBackgroundColor: COLORS,
+		},
+	],
+});
+
+const getEngagement = (person, time) =>
+	axiosWithAuth()
+		.get(`/reports/engagement?person=${person}&time=${time}`)
+		.then((res) => res.data.percentThanked);
+
+/* Share of employees who received / sent a recognition in the period */
 const DoughnutCharts = ({ doughnutFilter }) => {
-	const [percentThanked, setPercentThanked] = useState();
-	const [percentThankful, setPercentThankful] = useState();
+	const [percentThanked, setPercentThanked] = useState(null);
+	const [percentThankful, setPercentThankful] = useState(null);
 
 	useEffect(() => {
-		function getThanked() {
-			return axiosWithAuth().get(
-				`/reports/engagement?person=recipient&time=${doughnutFilter}`,
-			);
-		}
-
-		function getThankful() {
-			return axiosWithAuth().get(
-				`/reports/engagement?person=sender&time=${doughnutFilter}`,
-			);
-		}
-
-		axios.all([getThanked(), getThankful()]).then(
-			axios.spread(function(thanked, thankful) {
-				setPercentThanked(thanked.data.percentThanked);
-				setPercentThankful(thankful.data.percentThanked);
-			}),
-		);
+		let cancelled = false;
+		Promise.all([
+			getEngagement('recipient', doughnutFilter),
+			getEngagement('sender', doughnutFilter),
+		])
+			.then(([thanked, thankful]) => {
+				if (cancelled) return;
+				setPercentThanked(thanked);
+				setPercentThankful(thankful);
+			})
+			.catch(() => {
+				if (cancelled) return;
+				setPercentThanked(null);
+				setPercentThankful(null);
+			});
+		return () => {
+			cancelled = true;
+		};
 	}, [doughnutFilter]);
-
-	const percentUnthanked = 100 - percentThanked;
-	const percentUnthankful = 100 - percentThankful;
-
-	const recipientData = {
-		labels: ['Percent Not Thanked', 'Percent Thanked'],
-		datasets: [
-			{
-				data: [percentUnthanked, percentThanked],
-				backgroundColor: [
-					'rgba(201, 23, 87, 0.15)',
-					'rgba(201, 23, 87, 1)',
-				],
-				hoverBackgroundColor: [
-					'rgba(201, 23, 87, 0.15)',
-					'rgba(201, 23, 87, 1)',
-				],
-			},
-		],
-	};
-
-	const senderData = {
-		labels: ['Percent Not Thankful', 'Percent Thankful'],
-		datasets: [
-			{
-				data: [percentUnthankful, percentThankful],
-				backgroundColor: [
-					'rgba(201, 23, 87, 0.15)',
-					'rgba(201, 23, 87, 1)',
-				],
-				hoverBackgroundColor: [
-					'rgba(201, 23, 87, 0.15)',
-					'rgba(201, 23, 87, 1)',
-				],
-			},
-		],
-	};
-
-	const options = {
-		aspectRatio: 1,
-		responsive: true,
-		cutoutPercentage: 90,
-		legend: false,
-	};
 
 	return (
 		<div className="doughnut-charts">
 			<TotalRecognitionChart
 				percent={percentThankful}
-				data={senderData}
-				options={options}
+				data={chartData(
+					['Percent Not Thankful', 'Percent Thankful'],
+					percentThankful,
+				)}
+				options={OPTIONS}
 				text="Recognitions sent"
 			/>
 			<TotalRecognitionChart
 				percent={percentThanked}
-				data={recipientData}
-				options={options}
+				data={chartData(
+					['Percent Not Thanked', 'Percent Thanked'],
+					percentThanked,
+				)}
+				options={OPTIONS}
 				text="Recognitions received"
 			/>
 		</div>
