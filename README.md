@@ -68,9 +68,7 @@ The frontend and backend share one Auth0 application.
 | `yarn dev` | Starts the dev server on http://localhost:3000 |
 | `yarn build` | Builds the production app into `build/` |
 | `yarn start` | Serves `build/` (used on Railway) |
-| `yarn test` | Runs the tests |
-
-Some older tests are out of date. CI runs them but doesn't block merges on them yet.
+| `yarn test` | Runs the tests (CI runs them on every pull request) |
 
 ## Troubleshooting
 

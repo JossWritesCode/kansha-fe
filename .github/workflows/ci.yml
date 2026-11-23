@@ -17,9 +17,6 @@ jobs:
                   cache: yarn
             - run: yarn install --frozen-lockfile
             - run: yarn build
-            # Several legacy tests are out of date; keep them visible without
-            # blocking merges until they're fixed. Remove continue-on-error then.
             - run: yarn test --watchAll=false
-              continue-on-error: true
               env:
                   CI: true
