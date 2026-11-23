@@ -1,56 +1,56 @@
 import React from 'react';
 import { wait, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import mockAxios from 'axios';
-
 import Workspace from '../components/Workspace';
 import { renderWithRouterAndRedux } from './utils';
 
+const employee = {
+	id: 4,
+	first_name: 'Test',
+	last_name: 'Person',
+	profile_picture: 'https://fake.image',
+	job_title: 'CEO',
+	user_type: 'admin',
+	org_name: "Kevin's Funhouse",
+};
+
 describe('Workspace', () => {
-	mockAxios.get.mockImplementation(() =>
-		Promise.resolve({
-			data: {
-				count: 1,
-				employees: [
-					{
-						id: 4,
-						first_name: 'Test',
-						last_name: 'User',
-						profile_picture: 'https://fake.image',
-						job_title: 'CEO',
-						user_type: 'admin',
-						department: 'x',
-						org_name: "Kevin's Funhouse",
-					},
-				],
-			},
-		}),
-	);
-	it('should find word Workspace on page', async () => {
-		await wait(() => {
-			const { getByText } = renderWithRouterAndRedux(<Workspace />);
-			getByText(/Workspace/);
-		});
+	beforeEach(() => {
+		mockAxios.get.mockImplementation((url) =>
+			Promise.resolve({
+				data: url.startsWith('/employees')
+					? { count: 1, employees: [employee] }
+					: [],
+			}),
+		);
 	});
 
-	it('should change input', async () => {
-		await wait(() => {
-			const { container } = renderWithRouterAndRedux(<Workspace />);
-			const input = container.querySelector('input');
-			expect(input.value).toBe('');
-			fireEvent.change(input, { target: { value: 'Test' } });
-			expect(input.value).toBe('Test');
-		});
+	it('lists the organization’s employees', async () => {
+		const { findByText } = renderWithRouterAndRedux(<Workspace />);
+		expect(await findByText('Test Person')).toBeInTheDocument();
 	});
 
-	it('should call backend on input change', async () => {
-		await wait(() => {
-			const { container } = renderWithRouterAndRedux(<Workspace />);
-			const input = container.querySelector('input');
-			fireEvent.change(input, { target: { value: 'Test' } });
+	it('searches once typing pauses', async () => {
+		const { getByLabelText, findByText } = renderWithRouterAndRedux(
+			<Workspace />,
+		);
+		await findByText('Test Person');
+		mockAxios.get.mockClear();
+
+		const input = getByLabelText('Search Workspace');
+		fireEvent.change(input, { target: { value: 'Te' } });
+		fireEvent.change(input, { target: { value: 'Test' } });
+
+		await wait(() =>
 			expect(mockAxios.get).toHaveBeenCalledWith(
-				'/employees/organizations?search=Test',
-			);
-		});
+				expect.stringContaining(
+					'/employees/organizations?search=Test&',
+				),
+			),
+		);
+		const searches = mockAxios.get.mock.calls.filter(([url]) =>
+			url.startsWith('/employees'),
+		);
+		expect(searches).toHaveLength(1);
 	});
 });
