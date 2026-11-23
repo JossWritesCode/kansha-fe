@@ -110,7 +110,6 @@ export const App = () => {
 				color="#c91757"
 				height={100}
 				width={100}
-				timeout={10000}
 			/>
 		);
 	}
