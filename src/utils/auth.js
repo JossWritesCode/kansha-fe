@@ -33,6 +33,9 @@ export default class Auth {
 			} else if (err) {
 				console.log(err);
 				cb(err);
+			} else {
+				// No auth0 result in the hash: let the caller decide what to do
+				cb(null, null);
 			}
 		});
 	}

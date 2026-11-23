@@ -35,9 +35,15 @@ export const authorizeUser = auth => dispatch => {
 	dispatch({ type: USER_AUTH_START });
 
 	/* call back function. Is ran after the auth0 hastring is read */
-	const authActions = err => {
+	const authActions = (err, authResult) => {
 		if (err) {
 			dispatch({ type: USER_AUTH_FAILURE, payload: err });
+		} else if (authResult === null) {
+			/*
+				The URL had a hash that wasn't an auth0 callback (e.g. a
+				stale "#" or an anchor link). Fall back to the normal login.
+			*/
+			dispatch(login());
 		} else {
 			dispatch({ type: USER_AUTH_SUCCESS });
 		}
@@ -79,7 +85,17 @@ export const finishLogin = dispatch => {
 		})
 		.catch(err => {
 			console.log(err);
-			dispatch({ type: USER_LOGIN_FAILURE, payload: err.response });
+			/*
+				Network errors and timeouts have no `response`. Always send a
+				truthy payload so App leaves the loading spinner.
+			*/
+			dispatch({
+				type: USER_LOGIN_FAILURE,
+				payload: err.response || {
+					status: 0,
+					data: { message: err.message || 'Network error' },
+				},
+			});
 		});
 };
 
