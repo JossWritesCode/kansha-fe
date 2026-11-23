@@ -13,7 +13,7 @@ function Login() {
 	return (
 		<Loader
 			type="Rings"
-			color="#c91757"
+			color="#b71952"
 			height={100}
 			width={100}
 			timeout={10000}

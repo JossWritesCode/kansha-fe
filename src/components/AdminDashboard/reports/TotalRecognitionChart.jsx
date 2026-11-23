@@ -8,7 +8,8 @@ const TotalRecognitionChart = ({ data, options, percent, text }) => (
 				{Number.isFinite(percent) ? `${Math.round(percent)}%` : '—'}{' '}
 				Participation
 			</h3>
-			<Doughnut data={data} options={options} />
+			{/* square canvas, so the ring fills its container */}
+			<Doughnut data={data} options={options} width={140} height={140} />
 		</div>
 		<h5>{text}</h5>
 	</div>

@@ -67,7 +67,7 @@ function TeamMemberList() {
 	}
 
 	if (!teamDetails) {
-		return <Loader type="Rings" color="#c91757" height={100} width={100} />;
+		return <Loader type="Rings" color="#b71952" height={100} width={100} />;
 	}
 
 	return (
@@ -82,8 +82,10 @@ function TeamMemberList() {
 				<h2 className="members-number">{`Members (${teamDetails.team_members.length})`}</h2>
 			</div>
 			<div className="employee-filter-container">
-				<h3>Filter:</h3>
-				<button className="btn-filter">Members</button>
+				<span className="filter-label">Filter:</span>
+				<button className="btn-filter is-active" aria-pressed="true">
+					Members
+				</button>
 				<div className="employee-search-container">
 					<input
 						value={filter}

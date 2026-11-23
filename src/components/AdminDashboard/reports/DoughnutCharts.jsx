@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { axiosWithAuth } from '../../../utils/axiosWithAuth';
 import TotalRecognitionChart from './TotalRecognitionChart';
 
-const COLORS = ['rgba(201, 23, 87, 0.15)', 'rgba(201, 23, 87, 1)'];
+// Rose-wash track, raspberry share (see _variables.scss)
+const COLORS = ['#F9E8ED', '#B71952'];
 
 const OPTIONS = {
 	aspectRatio: 1,
 	responsive: true,
-	cutoutPercentage: 90,
+	cutoutPercentage: 88,
 	legend: false,
+	elements: { arc: { borderWidth: 0 } },
 };
 
 const chartData = (labels, percent) => ({

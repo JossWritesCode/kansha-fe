@@ -1,20 +1,60 @@
-// COLORS
-$color-primary: #c91757;
-$color-secondary: #fa2c51;
+// ---------------------------------------------------------------------------
+// PALETTE
+// Warm paper, deep navy ink and a restrained raspberry accent.
+// ---------------------------------------------------------------------------
+$ink: #171831; // header, sidebar, titles, primary text
+$ink-secondary: #595866; // roles, captions, dates, supporting text
+$paper: #faf7f2; // hero and workspace canvas
+$surface: #ffffff; // fields, content panels, photo margin
+$raspberry: #b71952; // primary actions, recognition, the ribbon
+$raspberry-deep: #951442; // hover and pressed
+$rose-wash: #f9e8ed; // selected filters, recognition details
+$rule: #ded9d4; // decorative dividers, panel edges
+$field-border: #8d8794; // editable field boundary (3:1 on white)
+$ink-raised: #2a2b47; // selected tile on the navy rail
+
+// Status colors stay distinct from the brand accent
+$color-error: #b3261e;
+$color-error-wash: #fbe9e7;
+$color-success: #1f6f43;
+$color-disabled-bg: #ebe7e3;
+$color-disabled-text: #8a8690;
+
+// Existing names, mapped onto the palette
+$color-primary: $raspberry;
+$color-primary-dark: $raspberry-deep;
+$color-secondary: $raspberry-deep;
 $color-gray-dark: #262c37;
-// #4c5870
-$color-gray-light: #757575;
-$color-white: #ffffff;
-$color-white-dark: #fcf9f9;
-$color-black: #000d22;
-$color-primary-nav: #0f0f33;
+$color-gray-light: $ink-secondary;
+$color-white: $surface;
+$color-white-dark: $paper;
+$color-black: $ink;
+$color-primary-nav: $ink;
 $color-black-light: #2d2c35;
 $color-white-cement: #e5e5e5;
-$color-primary-nav: #0f0f33;
 
-// FONTS
+// ---------------------------------------------------------------------------
+// TYPE (html font-size is 62.5%, so 1rem = 10px)
+// ---------------------------------------------------------------------------
+$font-ui: 'Lato', 'Helvetica Neue', Arial, sans-serif;
+$font-display: 'Spectral', Georgia, 'Times New Roman', serif;
+
 $default-font-size: 1.4rem;
 $h3-font-size: 3rem;
+
+// ---------------------------------------------------------------------------
+// SPACING, SHAPE, ELEVATION
+// ---------------------------------------------------------------------------
+$space-1: 0.8rem;
+$space-2: 1.6rem;
+$space-3: 2.4rem;
+$space-4: 3.2rem;
+
+$radius-control: 0.8rem;
+$radius-panel: 1.2rem;
+$control-height: 4.4rem;
+
+$shadow-float: 0 12px 32px rgba($ink, 0.16), 0 2px 6px rgba($ink, 0.08);
 
 // SIZES
 $small: 1.6rem;
@@ -26,7 +66,7 @@ $extra-large: 6.4rem;
 $bp-sm: 600px;
 $bp-md: 768px;
 $bp-lg: 1024px;
+$bp-feed: 720px; // the Feed rail is hidden below this width
 
 // MARKETING PAGES
-$lp-max-width: 1280px;
-$color-primary-dark: #b7154e;
+$lp-max-width: 1280px; // 1200px of content inside a 40px gutter

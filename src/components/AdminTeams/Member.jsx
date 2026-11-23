@@ -54,7 +54,7 @@ function Member({ member, teamDetails, setTeamDetails }) {
 				/>
 			)}
 			<tr className="indiv-team">
-				<td>
+				<td className="member-person">
 					<button
 						type="button"
 						className="teams-employee-link teams-employee-info"
@@ -72,34 +72,38 @@ function Member({ member, teamDetails, setTeamDetails }) {
 					{error && <p role="alert">{error}</p>}
 				</td>
 				<td className="recognition-btn">
-					<RecognitionIcon
+					<button
+						type="button"
+						className="icon-btn icon-btn--recognize"
 						aria-label={`Recognize ${member.first_name}`}
+						title={`Recognize ${member.first_name}`}
 						onClick={() => setRecogModal(true)}
-						style={{
-							height: '20px',
-							width: '20px',
-							cursor: 'pointer',
-						}}
-					/>
+					>
+						<RecognitionIcon aria-hidden="true" focusable="false" />
+					</button>
 					{recogModal && (
 						<Modal close={setRecogModal}>
 							<RecogModal profile={member} />
 						</Modal>
 					)}
 				</td>
-				<td>
+				<td className="member-role">
 					<h3>{member.team_role}</h3>
 				</td>
-				<td>
+				<td className="member-team">
 					<h3>{teamDetails.name}</h3>
 				</td>
 				{isAdmin && (
 					<td className="icons">
-						<DeleteIcon
+						<button
+							type="button"
+							className="icon-btn icon-btn--delete"
 							aria-label={`Remove ${member.first_name} from the team`}
+							title={`Remove ${member.first_name} from the team`}
 							onClick={() => setDeleteModal(true)}
-							style={{ marginRight: '2rem', cursor: 'pointer' }}
-						/>
+						>
+							<DeleteIcon aria-hidden="true" focusable="false" />
+						</button>
 					</td>
 				)}
 			</tr>

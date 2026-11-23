@@ -7,7 +7,6 @@ import { countBadges } from './countBadges';
 import Activity from '../FeedSideBar/Activity';
 import Badges from '../FeedSideBar/Badges';
 import ProfileTeamList from './ProfileTeamList';
-import { ReactComponent as EmptyBadges } from '../../assets/NoBadgeFeed.svg';
 import { ReactComponent as EmptyActivity } from '../../assets/noactivity.svg';
 
 /* The logged-in user's own profile: their team, badges and activity */
@@ -47,26 +46,36 @@ export function Profile() {
 			<section className="my-team-members">
 				<ProfileTeamList />
 			</section>
-			{error && <p role="alert">Your activity couldn't be loaded.</p>}
-			{numberOfBadges > 0 ? (
-				<section className="main-container-badges">
-					<div className="badges-title-container">
-						<h1 className="title-badges">My badges</h1>
-						<h2>{numberOfBadges}</h2>
-					</div>
+			{error && (
+				<p className="profile-error" role="alert">
+					Your activity couldn't be loaded.
+				</p>
+			)}
+			<section className="main-container-badges profile-panel">
+				<div className="badges-title-container">
+					<h1 className="title-badges">My badges</h1>
+					{numberOfBadges > 0 && <h2>{numberOfBadges}</h2>}
+				</div>
+				{numberOfBadges > 0 ? (
 					<div className="profile-badges">
 						<Badges userBadges={userBadges} />
 					</div>
-				</section>
-			) : (
-				<main className="empty-feed">
-					<EmptyBadges />
-				</main>
-			)}
+				) : (
+					<div className="profile-empty">
+						{/* a faded badge: one that hasn't been earned yet */}
+						<img
+							className="profile-empty__badge"
+							src={`${process.env.PUBLIC_URL}/badges/over-achiever.svg`}
+							alt=""
+						/>
+						<p>No badges to display yet.</p>
+					</div>
+				)}
+			</section>
 
-			{hasActivity ? (
-				<section className="activity-card">
-					<h5 className="title-activity-card">My activity</h5>
+			<section className="activity-card profile-panel">
+				<h2 className="title-activity-card">My activity</h2>
+				{hasActivity ? (
 					<section id="profile-activity-card">
 						<Activity
 							profileBadges={badges}
@@ -74,12 +83,17 @@ export function Profile() {
 							inModal={false}
 						/>
 					</section>
-				</section>
-			) : (
-				<main className="empty-feed">
-					<EmptyActivity />
-				</main>
-			)}
+				) : (
+					<div className="profile-empty">
+						<EmptyActivity
+							className="profile-empty__activity"
+							aria-hidden="true"
+							focusable="false"
+						/>
+						<p>No activity to display yet.</p>
+					</div>
+				)}
+			</section>
 		</main>
 	);
 }

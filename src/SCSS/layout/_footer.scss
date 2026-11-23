@@ -1,10 +1,11 @@
 // Marketing footer (landing, about us, onboarding)
 
 .lp-footer {
+	--focus-ring: #{$surface};
 	width: 100%;
-	background-color: $color-primary-nav;
-	color: $color-white;
-	font-size: 1.8rem;
+	background-color: $ink;
+	color: $surface;
+	font-size: 1.6rem;
 
 	&__inner {
 		@include lp-container;
@@ -36,8 +37,9 @@
 	}
 
 	&__copy {
-		font-size: 1.4rem;
-		color: rgba($color-white, 0.75);
+		font-size: 1.3rem;
+		line-height: 1.8rem;
+		color: rgba($surface, 0.78);
 	}
 
 	&__nav {

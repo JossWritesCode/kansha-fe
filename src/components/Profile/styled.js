@@ -8,13 +8,15 @@ export const Badge = styled.li`
 		count > 1 &&
 		`&::before {
 		content: 'x ${count}';
-        background: #b4114c;
+        background: #b71952;
         color: #fff;
         position: absolute;
-        right: 30px;
-        top: 5px;
+        right: 4px;
+        top: 4px;
         text-align: center;
         padding: 2px 8px;
         border-radius: 10px;
+        font-size: 1.2rem;
+        font-weight: 700;
 	}`}
 `;

@@ -1,46 +1,82 @@
+// Create a team: pick people on the left, name the team on the right
 .create-team-container {
-	display: flex;
-	flex-direction: row;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	border-top: 1px solid $rule;
 
-	.create-team-employees-list {
-		width: 50%;
-		padding-top: 3rem;
+	@media (min-width: 1100px) {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	}
+
+	.create-team-employees-list .employees-table {
+		border-top: 0;
 	}
 
 	.create-team {
-		width: 50%;
-		border-left: 1px solid $color-gray-light;
-		padding-left: 2.5rem;
-		padding-top: 1.5rem;
+		padding: $space-3;
+		border-top: 1px solid $rule;
+
+		@media (min-width: 1100px) {
+			border-top: 0;
+			border-left: 1px solid $rule;
+		}
 	}
 
 	.create-team-add-name {
-		margin-top: -2.7rem;
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
+		gap: $space-2;
+		margin-bottom: $space-2;
 
 		input {
-			border: 1px solid $color-gray-light;
-			border-radius: 6px;
-			width: 24.7rem;
-			margin-bottom: 2rem;
+			@include field;
+			flex: 1 1 20rem;
+			max-width: 28rem;
 		}
 
 		h2 {
-			font-size: 1.8rem;
-			color: $color-primary-nav;
-			font-weight: normal;
+			font-size: 1.6rem;
+			font-weight: 700;
+			color: $ink;
 		}
-	}
-
-	.teams-employee-icons {
-		display: flex;
-		align-items: center;
 	}
 
 	.added-team-list {
 		display: flex;
 		flex-direction: column;
+
+		.teams-employee-card {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 0.8rem $space-2;
+			padding: 0.8rem 0;
+
+			td {
+				display: flex;
+				align-items: center;
+			}
+
+			.teams-employee {
+				flex: 1 1 18rem;
+			}
+
+			svg {
+				width: 2rem;
+				height: 2rem;
+			}
+
+			select {
+				height: 3.6rem;
+				padding: 0 0.8rem;
+				border: 1px solid $field-border;
+				border-radius: $radius-control;
+				background-color: $surface;
+				color: $ink;
+				font-size: 1.4rem;
+			}
+		}
 	}
 }

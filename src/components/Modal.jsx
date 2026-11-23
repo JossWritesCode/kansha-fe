@@ -30,7 +30,7 @@ const animate = (elRef, frameRef, direction, onDone) => {
 	Fades in on mount and out on close. Each child component receives
 	`close`, so content can close the modal itself.
 */
-const Modal = ({ close, children }) => {
+const Modal = ({ close, children, className }) => {
 	const modal = useRef(null);
 	const frame = useRef(null);
 
@@ -51,7 +51,10 @@ const Modal = ({ close, children }) => {
 	);
 
 	return (
-		<div className="modal" ref={modal} style={{ opacity: 0 }}>
+		<div
+			className={className ? `modal ${className}` : 'modal'}
+			ref={modal}
+			style={{ opacity: 0 }}>
 			<div role="presentation" onClick={closeModal} />
 			<section>
 				<button

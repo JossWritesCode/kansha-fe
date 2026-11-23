@@ -1,5 +1,17 @@
+// Legacy card shadow, still used by screens outside the redesign
 @mixin boxshadow() {
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+}
+
+// Floating elements only (dialogs, menus)
+@mixin float-shadow() {
+	box-shadow: $shadow-float;
+}
+
+// Offset keyboard focus ring. Dark surfaces set --focus-ring to a light color.
+@mixin focus-ring($offset: 2px) {
+	outline: 2px solid var(--focus-ring, #{$raspberry});
+	outline-offset: $offset;
 }
 
 // Centered, max-width content column with a phone-safe side gutter
@@ -37,5 +49,166 @@
 		outline: 2px solid currentColor;
 		outline-offset: 4px;
 		border-radius: 0.4rem;
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Signed-in app
+// ---------------------------------------------------------------------------
+
+// A page inside the app shell: clears the navy rail on the left and the Feed
+// rail on the right, with a 32px title gutter (16px on phones).
+@mixin app-page() {
+	min-width: 0;
+	margin-left: 5.5rem;
+	margin-right: 5.5rem;
+	padding: $space-4;
+	color: $ink;
+
+	@media (max-width: $bp-feed) {
+		margin-right: 0;
+		padding: $space-3 $space-2;
+	}
+}
+
+@mixin app-page-title() {
+	font-family: $font-ui;
+	font-size: 3.2rem;
+	line-height: 3.8rem;
+	font-weight: 700;
+	color: $ink;
+}
+
+@mixin app-section-title() {
+	font-family: $font-ui;
+	font-size: 2rem;
+	line-height: 2.6rem;
+	font-weight: 700;
+	color: $ink;
+}
+
+@mixin metadata() {
+	font-size: 1.3rem;
+	line-height: 1.8rem;
+	font-weight: 400;
+	color: $ink-secondary;
+}
+
+// Flat content panel with a fine edge
+@mixin panel() {
+	background-color: $surface;
+	border: 1px solid $rule;
+	border-radius: $radius-panel;
+	padding: $space-3;
+}
+
+@mixin field() {
+	height: $control-height;
+	margin: 0;
+	padding: 0 1.2rem;
+	border: 1px solid $field-border;
+	border-radius: $radius-control;
+	background-color: $surface;
+	color: $ink;
+	font-size: 1.6rem;
+	line-height: 2.4rem;
+
+	&::placeholder {
+		color: $ink-secondary;
+		opacity: 1;
+	}
+
+	&:hover {
+		border-color: $ink-secondary;
+	}
+
+	&:focus-visible {
+		@include focus-ring(1px);
+		border-color: $raspberry;
+	}
+}
+
+@mixin button-base() {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: $space-1;
+	min-height: $control-height;
+	margin: 0;
+	padding: 0 $space-3;
+	border-radius: $radius-control;
+	font-family: $font-ui;
+	font-size: 1.5rem;
+	line-height: 2rem;
+	font-weight: 700;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: background-color 150ms ease, border-color 150ms ease,
+		color 150ms ease;
+
+	&:focus-visible {
+		@include focus-ring(2px);
+	}
+
+	&:disabled {
+		background-color: $color-disabled-bg;
+		border-color: $color-disabled-bg;
+		color: $color-disabled-text;
+		cursor: not-allowed;
+	}
+}
+
+@mixin button-primary() {
+	@include button-base;
+	border: 1px solid $raspberry;
+	background-color: $raspberry;
+	color: $surface;
+
+	&:hover:not(:disabled) {
+		background-color: $raspberry-deep;
+		border-color: $raspberry-deep;
+	}
+
+	&:active:not(:disabled) {
+		background-color: $raspberry-deep;
+	}
+}
+
+@mixin button-secondary() {
+	@include button-base;
+	border: 1px solid $raspberry;
+	background-color: $surface;
+	color: $raspberry;
+
+	&:hover:not(:disabled) {
+		background-color: $rose-wash;
+		border-color: $raspberry-deep;
+		color: $raspberry-deep;
+	}
+}
+
+// Square icon button with a generous hit area
+@mixin icon-button($size: 4rem) {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: $size;
+	height: $size;
+	padding: 0;
+	border: 0;
+	border-radius: $radius-control;
+	background: transparent;
+	cursor: pointer;
+	transition: background-color 150ms ease, color 150ms ease;
+
+	svg {
+		display: block;
+		width: 2rem;
+		height: 2rem;
+	}
+
+	&:focus-visible {
+		@include focus-ring(1px);
 	}
 }

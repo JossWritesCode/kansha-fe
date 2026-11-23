@@ -35,22 +35,24 @@ const TOPICS = [
 	},
 ];
 
-const HelpModalMenu = ({ setTitle, setContent }) => (
+const HelpModalMenu = ({ title, setTitle, setContent }) => (
 	<div className="modal-menu-container">
-		{TOPICS.map(({ Icon, label, title, content }) => (
-			<div
+		{TOPICS.map(({ Icon, label, title: topicTitle, content }) => (
+			<button
 				key={label}
-				role="button"
-				tabIndex={0}
+				type="button"
 				className="modal-div"
+				aria-pressed={title === topicTitle}
 				onClick={() => {
-					setTitle(title);
+					setTitle(topicTitle);
 					setContent(content);
 				}}
 			>
-				<Icon />
-				<h1>{label}</h1>
-			</div>
+				<span className="modal-div__icon" aria-hidden="true">
+					<Icon focusable="false" />
+				</span>
+				<span className="modal-div__label">{label}</span>
+			</button>
 		))}
 	</div>
 );
